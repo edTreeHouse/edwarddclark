@@ -79,6 +79,25 @@
   color: var(--text);
 }
 
+.initiative-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.initiative-heading h2 {
+  margin: 0;
+}
+
+.initiative-logo {
+  width: clamp(3.5rem, 6vw, 4.5rem);
+  height: clamp(3.5rem, 6vw, 4.5rem);
+  flex: 0 0 auto;
+  border-radius: 0.8rem;
+  object-fit: contain;
+}
+
 @media (max-width: 52rem) {
   .work-item-head {
     flex-direction: column;
