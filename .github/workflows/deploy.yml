@@ -3,19 +3,15 @@ name: Deploy website
 on:
   workflow_dispatch:
     inputs:
-      hosted_zone_id:
-        description: Route 53 hosted zone ID for edwarddclark.com
-        required: true
       deploy_infrastructure:
         description: Deploy or update CloudFormation before publishing
         required: true
-        default: true
+        default: false
         type: boolean
   push:
     branches: [main]
     paths:
       - website/**
-      - infrastructure/**
       - .github/workflows/deploy.yml
 
 permissions:
@@ -30,11 +26,13 @@ env:
   AWS_REGION: us-east-1
   STACK_NAME: edwarddclark-website
   DOMAIN_NAME: edwarddclark.com
+  HOSTED_ZONE_ID: Z0974116K34TIFVG51RG
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 25
 
     steps:
       - name: Check out repository
@@ -46,41 +44,29 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Resolve hosted zone
-        id: zone
-        shell: bash
-        env:
-          MANUAL_ZONE_ID: ${{ github.event.inputs.hosted_zone_id }}
-        run: |
-          set -euo pipefail
-          ZONE_ID="${MANUAL_ZONE_ID:-}"
-          if [ -z "$ZONE_ID" ]; then
-            ZONE_ID=$(aws route53 list-hosted-zones-by-name \
-              --dns-name "$DOMAIN_NAME" \
-              --query "HostedZones[?Name=='${DOMAIN_NAME}.']|[0].Id" \
-              --output text | sed 's|/hostedzone/||')
-          fi
-          if [ -z "$ZONE_ID" ] || [ "$ZONE_ID" = "None" ]; then
-            echo "No hosted zone was found for $DOMAIN_NAME. Create one in Route 53, then rerun this workflow."
-            exit 1
-          fi
-          echo "hosted_zone_id=$ZONE_ID" >> "$GITHUB_OUTPUT"
-
       - name: Validate CloudFormation
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_infrastructure
         run: aws cloudformation validate-template --template-body file://infrastructure/template.yaml
 
       - name: Deploy infrastructure
-        if: github.event_name == 'push' || github.event.inputs.deploy_infrastructure == 'true'
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_infrastructure
         run: |
           aws cloudformation deploy \
             --stack-name "$STACK_NAME" \
             --template-file infrastructure/template.yaml \
             --parameter-overrides \
               DomainName="$DOMAIN_NAME" \
-              HostedZoneId="${{ steps.zone.outputs.hosted_zone_id }}" \
+              HostedZoneId="$HOSTED_ZONE_ID" \
               GitHubRepository="${{ github.repository }}" \
-              GitHubBranch="${{ github.ref_name }}" \
+              GitHubBranch="main" \
             --no-fail-on-empty-changeset
+
+      - name: Confirm stack is available
+        run: |
+          aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --query "Stacks[0].StackStatus" \
+            --output text
 
       - name: Read stack outputs
         id: stack
@@ -93,6 +79,8 @@ jobs:
             --stack-name "$STACK_NAME" \
             --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
             --output text)
+          test -n "$BUCKET" && test "$BUCKET" != "None"
+          test -n "$DISTRIBUTION" && test "$DISTRIBUTION" != "None"
           echo "bucket=$BUCKET" >> "$GITHUB_OUTPUT"
           echo "distribution=$DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
@@ -101,12 +89,13 @@ jobs:
           aws s3 sync website/ "s3://${{ steps.stack.outputs.bucket }}/" \
             --delete \
             --cache-control "public,max-age=300"
-          aws s3 cp website/index.html "s3://${{ steps.stack.outputs.bucket }}/index.html" \
-            --cache-control "public,max-age=60,must-revalidate" \
-            --content-type "text/html"
-          aws s3 cp website/404.html "s3://${{ steps.stack.outputs.bucket }}/404.html" \
-            --cache-control "public,max-age=60,must-revalidate" \
-            --content-type "text/html"
+
+          find website -name '*.html' -print0 | while IFS= read -r -d '' file; do
+            key="${file#website/}"
+            aws s3 cp "$file" "s3://${{ steps.stack.outputs.bucket }}/$key" \
+              --cache-control "public,max-age=60,must-revalidate" \
+              --content-type "text/html"
+          done
 
       - name: Invalidate CloudFront
         run: |
