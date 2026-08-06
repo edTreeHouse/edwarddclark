@@ -6,6 +6,15 @@ Official website for **Edward D. Clark**.
 
 This repository is the canonical source for the Edward D. Clark personal website and its AWS infrastructure.
 
+## Platform direction
+
+The long-term information architecture and visual standards are documented here:
+
+- [Platform architecture](docs/PLATFORM_ARCHITECTURE.md)
+- [Design system](docs/DESIGN_SYSTEM.md)
+
+These documents define the roles of EdwardDClark.com, CollectiveStateInference.org, and Vibe Village; the planned site map; content ownership boundaries; reusable interface patterns; portrait treatment; typography; accessibility; and implementation phases.
+
 ## Architecture
 
 - Amazon Route 53 for DNS
@@ -19,6 +28,7 @@ This repository is the canonical source for the Edward D. Clark personal website
 
 ```text
 .github/workflows/   Deployment automation
+docs/                Platform architecture and design standards
 infrastructure/      CloudFormation templates
 website/             Static site source
 ```
@@ -67,7 +77,7 @@ At minimum, the deployment role needs access to:
 
 ### 3. Deploy
 
-Run the **Deploy website** workflow manually the first time and provide the hosted zone ID. Subsequent merges to `main` deploy automatically.
+Run the **Deploy website** workflow manually the first time and provide the hosted zone ID. Subsequent merges to `main` deploy automatically when GitHub Actions is available.
 
 The CloudFormation stack is named:
 
