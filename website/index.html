@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Edward D. Clark — Researcher, AI Architect, Entrepreneur</title>
+  <title>Edward D. Clark — AI Researcher and Enterprise Architect</title>
   <meta name="description" content="The official website of Edward D. Clark, originator of Collective-State Inference, enterprise AI architect, and founder of Vibe Village.">
   <link rel="canonical" href="https://edwarddclark.com/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Edward D. Clark">
-  <meta property="og:description" content="Researcher, AI architect, and entrepreneur advancing artificial intelligence beyond the individual.">
+  <meta property="og:description" content="Researching how artificial intelligence can infer the latent conditions of groups—not only individuals.">
   <meta property="og:url" content="https://edwarddclark.com/">
   <meta name="theme-color" content="#071521">
   <link rel="stylesheet" href="/styles.css">
@@ -28,21 +28,82 @@
   </script>
 </head>
 <body>
-  <main>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Edward D. Clark home">EDC</a>
+    <nav aria-label="Primary navigation">
+      <a href="#research">Research</a>
+      <a href="#work">Current work</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="top">
     <section class="hero" aria-labelledby="site-title">
-      <p class="eyebrow">Researcher · AI Architect · Entrepreneur</p>
-      <h1 id="site-title">Edward D. Clark</h1>
-      <p class="statement">Artificial intelligence has become remarkably good at understanding individuals. My work explores how it can understand groups.</p>
-      <p class="summary">I am the originator of Collective-State Inference, a research program focused on enabling AI systems to infer latent conditions that emerge within bounded collectives.</p>
-      <nav class="actions" aria-label="Primary links">
-        <a class="primary" href="https://collectivestateinference.org/">Explore the research</a>
-        <a href="https://github.com/edTreeHouse">GitHub</a>
+      <p class="eyebrow">Edward D. Clark</p>
+      <h1 id="site-title">Can AI understand the state of a collective?</h1>
+      <p class="lede">Modern artificial intelligence has become remarkably good at understanding individuals. My research asks what becomes possible when AI can also infer the latent conditions that emerge within groups.</p>
+      <div class="actions" aria-label="Primary links">
+        <a class="primary" href="https://collectivestateinference.org/">Explore Collective-State Inference</a>
         <a href="https://www.linkedin.com/in/edwardclark">LinkedIn</a>
-      </nav>
+      </div>
+      <div class="role-line" aria-label="Professional roles">
+        <span>AI Researcher</span>
+        <span>Enterprise Architect</span>
+        <span>Entrepreneur</span>
+      </div>
+    </section>
+
+    <section id="research" class="section research-section" aria-labelledby="research-title">
+      <div class="section-kicker">Research</div>
+      <div class="section-copy">
+        <h2 id="research-title">Collective-State Inference</h2>
+        <p>Collective-State Inference is a research program for understanding latent, emergent conditions of bounded collectives—such as engagement, cohesion, conflict, and alignment—from observable interaction patterns.</p>
+        <p>The work examines a central limitation in contemporary AI: understanding a group is not always reducible to understanding each member separately.</p>
+        <a class="text-link" href="https://collectivestateinference.org/">Visit the research program <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section id="work" class="section" aria-labelledby="work-title">
+      <div class="section-kicker">Current work</div>
+      <div class="section-copy">
+        <h2 id="work-title">Research, architecture, and venture building</h2>
+        <div class="cards">
+          <article>
+            <p class="card-number">01</p>
+            <h3>Research</h3>
+            <p>Developing the theoretical, operational, and empirical foundations of Collective-State Inference.</p>
+          </article>
+          <article>
+            <p class="card-number">02</p>
+            <h3>Enterprise AI</h3>
+            <p>Designing resilient cloud, data, and AI systems for complex, high-stakes operating environments.</p>
+          </article>
+          <article>
+            <p class="card-number">03</p>
+            <h3>Vibe Village</h3>
+            <p>Building an AI-enabled social music platform centered on discovery, interaction, and shared experience.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about-section" aria-labelledby="about-title">
+      <div class="section-kicker">About</div>
+      <div class="section-copy">
+        <h2 id="about-title">A practitioner building a research agenda</h2>
+        <p>I am an enterprise architect, independent researcher, and entrepreneur working at the intersection of artificial intelligence, organizational systems, and collective behavior. My professional work focuses on translating complex ideas into durable systems; my research extends that same discipline toward a deeper question—how AI might reason about groups as emergent entities.</p>
+        <div class="profile-links">
+          <a href="https://github.com/edTreeHouse">GitHub</a>
+          <a href="https://www.linkedin.com/in/edwardclark">LinkedIn</a>
+          <a href="https://collectivestateinference.org/">CSI Research</a>
+        </div>
+      </div>
     </section>
   </main>
+
   <footer>
     <p>© <span id="year"></span> Edward D. Clark</p>
+    <p>Researcher · AI Architect · Entrepreneur</p>
   </footer>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
