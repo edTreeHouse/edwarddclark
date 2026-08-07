@@ -79,14 +79,16 @@
   color: var(--text);
 }
 
-.initiative-heading {
+.initiative-heading,
+.branded-section-heading {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.25rem;
 }
 
-.initiative-heading h2 {
+.initiative-heading h2,
+.branded-section-heading h2 {
   margin: 0;
 }
 
@@ -98,6 +100,26 @@
   object-fit: contain;
 }
 
+.section-brand-mark {
+  width: clamp(4.2rem, 7vw, 5.4rem);
+  height: clamp(4.2rem, 7vw, 5.4rem);
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.csi-sphere-mark {
+  filter: drop-shadow(0 0 1rem rgba(21, 140, 255, 0.18));
+}
+
+.brand-context {
+  margin: 0 0 0.3rem;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 52rem) {
   .work-item-head {
     flex-direction: column;
@@ -106,5 +128,9 @@
 
   .status-badge {
     white-space: normal;
+  }
+
+  .branded-section-heading {
+    align-items: flex-start;
   }
 }
