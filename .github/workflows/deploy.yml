@@ -34,6 +34,15 @@ jobs:
       id-token: write
 
     steps:
+      - name: Require main branch for production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Production deployments may only run from main." >&2
+            exit 1
+          fi
+
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
