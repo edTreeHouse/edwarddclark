@@ -1,0 +1,72 @@
+.outputs-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(34rem, 62vw, 48rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-inline: calc(50% - 50vw);
+  padding: clamp(6rem, 12vw, 10rem) max(1.5rem, calc((100vw - var(--content)) / 2)) clamp(5rem, 9vw, 8rem);
+  overflow: hidden;
+  background-image: url('/assets/research-outputs-hero.webp');
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.outputs-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(7, 21, 33, 0.94) 0%, rgba(7, 21, 33, 0.82) 42%, rgba(7, 21, 33, 0.53) 68%, rgba(7, 21, 33, 0.35) 100%),
+    linear-gradient(180deg, rgba(7, 21, 33, 0.22) 0%, rgba(7, 21, 33, 0.16) 50%, rgba(7, 21, 33, 0.58) 100%);
+}
+
+.outputs-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 16% 45%, rgba(28, 115, 129, 0.17), transparent 36rem);
+  pointer-events: none;
+}
+
+.outputs-hero .eyebrow,
+.outputs-hero h1,
+.outputs-hero .lede {
+  position: relative;
+  z-index: 1;
+}
+
+.outputs-hero h1 {
+  max-width: 10ch;
+  text-shadow: 0 0.08em 0.4em rgba(0, 0, 0, 0.28);
+}
+
+.outputs-hero .lede {
+  max-width: 42rem;
+  color: rgba(224, 233, 239, 0.82);
+  text-shadow: 0 0.06em 0.3em rgba(0, 0, 0, 0.32);
+}
+
+@media (max-width: 52rem) {
+  .outputs-hero {
+    min-height: 38rem;
+    background-position: 66% center;
+  }
+
+  .outputs-hero::before {
+    background:
+      linear-gradient(90deg, rgba(7, 21, 33, 0.95) 0%, rgba(7, 21, 33, 0.86) 58%, rgba(7, 21, 33, 0.55) 100%),
+      linear-gradient(180deg, rgba(7, 21, 33, 0.26) 0%, rgba(7, 21, 33, 0.34) 58%, rgba(7, 21, 33, 0.72) 100%);
+  }
+}
+
+@media (max-width: 40rem) {
+  .outputs-hero {
+    min-height: 34rem;
+    background-position: 72% center;
+  }
+}
