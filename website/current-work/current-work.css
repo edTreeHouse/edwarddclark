@@ -187,6 +187,296 @@
   text-transform: uppercase;
 }
 
+/* Current Work hero constellation */
+.current-work-hero--visual {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(27rem, 0.92fr);
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  min-height: calc(100vh - 5rem);
+  padding-top: clamp(4.5rem, 8vw, 7rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.current-work-hero-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.current-work-hero-copy h1 {
+  max-width: 10ch;
+}
+
+.current-work-hero-copy .lede {
+  max-width: 35rem;
+}
+
+.current-work-constellation {
+  position: relative;
+  min-height: clamp(34rem, 43vw, 43rem);
+  width: 100%;
+  max-width: 44rem;
+  justify-self: end;
+  isolation: isolate;
+}
+
+.current-work-constellation::before {
+  content: "";
+  position: absolute;
+  inset: 8% 4% 5%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 56%, rgba(97, 219, 200, 0.09), transparent 34%),
+    radial-gradient(circle at 50% 48%, rgba(34, 137, 255, 0.07), transparent 58%);
+  border: 1px solid rgba(97, 219, 200, 0.06);
+  box-shadow: 0 0 80px rgba(45, 164, 255, 0.04) inset;
+  z-index: -3;
+}
+
+.current-work-constellation::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 6%;
+  bottom: 2.2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(64, 162, 255, 0.32), rgba(97, 219, 200, 0.42), transparent);
+  box-shadow: 0 0 18px rgba(64, 162, 255, 0.2);
+  z-index: -1;
+}
+
+.constellation-branches {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.constellation-branch {
+  fill: none;
+  stroke: rgba(97, 219, 200, 0.5);
+  stroke-width: 0.34;
+  stroke-linecap: round;
+  stroke-dasharray: 1.2 2.8;
+  filter: drop-shadow(0 0 1.2px rgba(97, 219, 200, 0.55));
+  animation: constellationFlow 12s linear infinite;
+}
+
+.branch-uel { animation-delay: -2.8s; }
+.branch-vibe { animation-delay: -5.2s; }
+.branch-architecture { animation-delay: -7.4s; }
+
+.constellation-tree {
+  position: absolute;
+  left: 50%;
+  bottom: 2.8rem;
+  width: clamp(11.5rem, 18vw, 15.5rem);
+  translate: -50% 0;
+  z-index: 2;
+  animation: treeBreathe 9s ease-in-out infinite;
+}
+
+.constellation-tree img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0 0 12px rgba(97, 219, 200, 0.12))
+    drop-shadow(0 0 28px rgba(45, 134, 255, 0.09));
+  z-index: 1;
+}
+
+.constellation-tree-glow {
+  position: absolute;
+  inset: 16% 12% 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(97, 219, 200, 0.18), rgba(42, 130, 255, 0.06) 48%, transparent 72%);
+  filter: blur(16px);
+  animation: treeGlow 7.5s ease-in-out infinite;
+}
+
+.constellation-node {
+  --node-size: clamp(6.2rem, 8vw, 7.8rem);
+  position: absolute;
+  width: var(--node-size);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--text);
+  text-decoration: none;
+  z-index: 4;
+  animation: constellationFloat 7.2s ease-in-out infinite;
+}
+
+.constellation-node:hover,
+.constellation-node:focus-visible {
+  scale: 1.055;
+  outline: none;
+}
+
+.constellation-node:hover .constellation-ring,
+.constellation-node:focus-visible .constellation-ring {
+  border-color: rgba(97, 219, 200, 0.72);
+  box-shadow: 0 0 26px rgba(97, 219, 200, 0.2), 0 0 0 1px rgba(97, 219, 200, 0.1) inset;
+}
+
+.constellation-node-inner {
+  position: relative;
+  width: var(--node-size);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid rgba(97, 219, 200, 0.27);
+  background:
+    radial-gradient(circle at 38% 30%, rgba(97, 219, 200, 0.13), transparent 45%),
+    rgba(7, 21, 33, 0.86);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.025) inset,
+    0 0 28px rgba(47, 150, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.constellation-node-inner img,
+.constellation-node-inner svg {
+  display: block;
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+}
+
+.node-inner-light {
+  padding: 1.25rem;
+}
+
+.node-inner-light img {
+  width: 82%;
+  height: 82%;
+  border-radius: 0.42rem;
+}
+
+.constellation-ring {
+  position: absolute;
+  top: -0.38rem;
+  left: -0.38rem;
+  width: calc(var(--node-size) + 0.76rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(97, 219, 200, 0.26);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(97, 219, 200, 0.08);
+  animation: constellationPulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.constellation-node-label {
+  color: var(--accent);
+  font-size: 0.69rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.84;
+}
+
+.node-csi {
+  top: 2.5%;
+  left: calc(50% - (var(--node-size) / 2));
+  animation-delay: -0.6s;
+}
+
+.node-uel {
+  top: 18%;
+  left: 4%;
+  animation-delay: -2.1s;
+}
+
+.node-vibe {
+  top: 18%;
+  right: 1.5%;
+  animation-delay: -3.8s;
+}
+
+.node-architecture {
+  top: 52%;
+  right: 0;
+  animation-delay: -5.4s;
+}
+
+.constellation-architecture-mark {
+  color: #78dfee;
+}
+
+.constellation-architecture-mark svg {
+  width: 72%;
+  height: 72%;
+  filter: drop-shadow(0 0 8px rgba(97, 219, 200, 0.2));
+}
+
+@keyframes constellationFloat {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -0.48rem; }
+}
+
+@keyframes constellationPulse {
+  0%, 100% { scale: 1; opacity: 0.72; }
+  50% { scale: 1.045; opacity: 1; }
+}
+
+@keyframes constellationFlow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes treeBreathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.018; }
+}
+
+@keyframes treeGlow {
+  0%, 100% { opacity: 0.58; scale: 0.96; }
+  50% { opacity: 0.96; scale: 1.04; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .constellation-node,
+  .constellation-ring,
+  .constellation-branch,
+  .constellation-tree,
+  .constellation-tree-glow {
+    animation: none !important;
+  }
+
+  .constellation-node:hover,
+  .constellation-node:focus-visible {
+    scale: 1;
+  }
+}
+
+@media (max-width: 72rem) {
+  .current-work-hero--visual {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .current-work-hero-copy h1 {
+    max-width: 11ch;
+  }
+
+  .current-work-constellation {
+    min-height: 35rem;
+    max-width: 39rem;
+    justify-self: center;
+    margin-top: 0.75rem;
+  }
+}
+
 @media (max-width: 52rem) {
   .work-item-head,
   .engagement-card-head {
@@ -216,5 +506,32 @@
   .treehouse-logo {
     width: 4.8rem;
     height: 4.8rem;
+  }
+
+  .current-work-hero--visual {
+    padding-top: 3.8rem;
+  }
+
+  .current-work-constellation {
+    min-height: 29rem;
+  }
+
+  .constellation-node {
+    --node-size: 5.15rem;
+  }
+
+  .constellation-tree {
+    width: 9.3rem;
+    bottom: 1.6rem;
+  }
+
+  .node-csi { top: 2%; }
+  .node-uel { top: 19%; left: 0; }
+  .node-vibe { top: 19%; right: 0; }
+  .node-architecture { top: 55%; right: 0; }
+
+  .constellation-node-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
   }
 }
