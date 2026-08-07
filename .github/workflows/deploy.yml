@@ -162,7 +162,7 @@ jobs:
 
           curl --fail --silent --show-error --location \
             --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=4" \
+            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" \
             --output /tmp/research-outputs-hero.webp
 
           cmp website/current-work/index.html /tmp/current-work.html
@@ -173,5 +173,6 @@ jobs:
           cmp website/outputs/index.html /tmp/outputs.html
           cmp website/outputs/outputs.css /tmp/outputs.css
           cmp website/assets/research-outputs-hero.webp /tmp/research-outputs-hero.webp
+          test "$(wc -c < /tmp/research-outputs-hero.webp)" -eq 11198
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
-          grep -Fq '/assets/research-outputs-hero.webp?v=4' /tmp/outputs.html
+          grep -Fq '/assets/research-outputs-hero.webp?v=5' /tmp/outputs.html
