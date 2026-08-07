@@ -8,7 +8,7 @@
   margin-inline: calc(50% - 50vw);
   padding: clamp(6rem, 12vw, 10rem) max(1.5rem, calc((100vw - var(--content)) / 2)) clamp(5rem, 9vw, 8rem);
   overflow: hidden;
-  background-image: url('/assets/research-outputs-hero.jpg');
+  background-image: url('/assets/research-outputs-hero.webp');
   background-size: cover;
   background-position: center;
   border-bottom: 1px solid var(--line);
