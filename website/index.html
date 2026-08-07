@@ -5,30 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Edward D. Clark — AI Researcher and Enterprise Architect</title>
   <meta name="description" content="The official website of Edward D. Clark, originator of Collective-State Inference, enterprise AI architect, and founder of Vibe Village.">
+  <meta name="author" content="Edward D. Clark">
+  <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://edwarddclark.com/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Edward D. Clark">
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Edward D. Clark">
+  <meta property="og:title" content="Edward D. Clark — AI Researcher and Enterprise Architect">
   <meta property="og:description" content="Researching how artificial intelligence can infer the latent conditions of groups—not only individuals.">
   <meta property="og:url" content="https://edwarddclark.com/">
+  <meta property="og:image" content="https://edwarddclark.com/assets/edward-d-clark-portrait.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Edward D. Clark — AI Researcher and Enterprise Architect">
+  <meta name="twitter:description" content="Researching how artificial intelligence can infer the latent conditions of groups—not only individuals.">
+  <meta name="twitter:image" content="https://edwarddclark.com/assets/edward-d-clark-portrait.png">
   <meta name="theme-color" content="#071521">
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    "url": "https://edwarddclark.com/",
-    "mainEntity": {
-      "@type": "Person",
-      "name": "Edward D. Clark",
-      "url": "https://edwarddclark.com/",
-      "jobTitle": "Enterprise Architect and AI Researcher",
-      "sameAs": [
-        "https://www.linkedin.com/in/edwardclark",
-        "https://github.com/edTreeHouse",
-        "https://collectivestateinference.org/"
-      ]
-    }
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://edwarddclark.com/#website",
+        "url": "https://edwarddclark.com/",
+        "name": "Edward D. Clark",
+        "description": "Official website of Edward D. Clark, AI researcher, enterprise architect, and entrepreneur.",
+        "publisher": {"@id": "https://edwarddclark.com/#person"}
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://edwarddclark.com/#profile",
+        "url": "https://edwarddclark.com/",
+        "name": "Edward D. Clark — AI Researcher and Enterprise Architect",
+        "isPartOf": {"@id": "https://edwarddclark.com/#website"},
+        "mainEntity": {"@id": "https://edwarddclark.com/#person"}
+      },
+      {
+        "@type": "Person",
+        "@id": "https://edwarddclark.com/#person",
+        "name": "Edward D. Clark",
+        "url": "https://edwarddclark.com/",
+        "image": "https://edwarddclark.com/assets/edward-d-clark-portrait.png",
+        "jobTitle": ["Enterprise Architect", "AI Researcher"],
+        "description": "Enterprise architect, independent AI researcher, entrepreneur, and originator of Collective-State Inference.",
+        "knowsAbout": [
+          "Artificial intelligence",
+          "Enterprise architecture",
+          "Collective-State Inference",
+          "Collective intelligence",
+          "Cloud architecture",
+          "Healthcare interoperability"
+        ],
+        "sameAs": [
+          "https://www.linkedin.com/in/edwardclark",
+          "https://github.com/edTreeHouse",
+          "https://collectivestateinference.org/researcher-profile.html",
+          "https://collectivestateinference.org/"
+        ]
+      }
+    ]
   }
   </script>
 </head>
