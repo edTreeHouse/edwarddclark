@@ -1,0 +1,70 @@
+name: Validate website
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - website/**
+      - infrastructure/**
+      - .github/workflows/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Validate repository structure
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -s website/index.html
+          test -s website/current-work/index.html
+          test -s website/current-work/current-work.css
+          test -s website/assets/treehouse-logo.png
+          test -s infrastructure/template.yaml
+
+          if find website -type l -print -quit | grep -q .; then
+            echo "Symbolic links are not allowed under website/." >&2
+            exit 1
+          fi
+
+          grep -Fq 'src="/assets/treehouse-logo.png"' website/current-work/index.html
+
+          while IFS= read -r -d '' file; do
+            grep -Fq '</html>' "$file" || {
+              echo "Missing closing </html> tag: $file" >&2
+              exit 1
+            }
+          done < <(find website -name '*.html' -print0)
+
+      - name: Validate CloudFormation syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          template = Path('infrastructure/template.yaml')
+          text = template.read_text(encoding='utf-8')
+          required = (
+              "AWSTemplateFormatVersion:",
+              "Resources:",
+              "WebsiteBucket:",
+              "WebsiteDistribution:",
+              "Outputs:",
+          )
+          missing = [item for item in required if item not in text]
+          if missing:
+              raise SystemExit(f"CloudFormation template is missing required sections: {missing}")
+          PY
