@@ -49,59 +49,6 @@
   filter: blur(42px);
 }
 
-.consulting-heading {
-  display: flex;
-  align-items: center;
-  gap: clamp(1rem, 2.5vw, 1.6rem);
-  margin-bottom: 1.5rem;
-}
-
-.treehouse-logo {
-  width: clamp(5rem, 9vw, 7rem);
-  height: clamp(5rem, 9vw, 7rem);
-  flex: 0 0 auto;
-  object-fit: contain;
-}
-
-.consulting-context,
-.engagement-label {
-  margin: 0;
-  color: var(--accent);
-  font-size: 0.76rem;
-  font-weight: 750;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.consulting-heading h2 {
-  margin: 0.35rem 0 0;
-}
-
-.engagement-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 2.2rem;
-}
-
-.engagement-card {
-  min-height: 16rem;
-  padding: 1.4rem;
-  border: 1px solid var(--line);
-  border-radius: 1.1rem;
-  background: linear-gradient(145deg, rgba(97, 219, 200, 0.055), rgba(255, 255, 255, 0.02));
-}
-
-.engagement-card h3 {
-  margin: 2.4rem 0 0.8rem;
-  font-size: 1.4rem;
-}
-
-.engagement-card p:last-child {
-  margin: 0;
-  color: var(--muted);
-}
-
 .section-copy blockquote {
   max-width: 42rem;
   margin: 0;
@@ -149,12 +96,10 @@
     max-width: 34rem;
   }
 
-  .engagement-grid,
   .about-cards {
     grid-template-columns: 1fr;
   }
 
-  .engagement-card,
   .about-cards article {
     min-height: auto;
   }
@@ -167,14 +112,5 @@
 
   .portrait-frame {
     min-height: 25rem;
-  }
-
-  .consulting-heading {
-    align-items: flex-start;
-  }
-
-  .treehouse-logo {
-    width: 4.8rem;
-    height: 4.8rem;
   }
 }
