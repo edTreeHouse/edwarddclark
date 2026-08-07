@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Collective-State Inference sphere mark</title>
+  <desc id="desc">A bounded sphere containing interconnected nodes and relational paths.</desc>
+  <defs>
+    <radialGradient id="sphere" cx="50%" cy="46%" r="56%">
+      <stop offset="0" stop-color="#0b4f8a" stop-opacity="0.92"/>
+      <stop offset="0.58" stop-color="#082a4a" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#071521" stop-opacity="0.98"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="64" cy="64" r="55" fill="url(#sphere)" stroke="#b6d8ef" stroke-opacity="0.7" stroke-width="2.2"/>
+  <g stroke="#6fbfff" stroke-opacity="0.62" stroke-width="1.15" fill="none">
+    <path d="M34 40 64 28 91 43 99 69 83 92 58 101 35 82 28 58Z"/>
+    <path d="M34 40 58 63 91 43M28 58 58 63 99 69M35 82 58 63 83 92M64 28 58 63 58 101"/>
+    <path d="M34 40 83 92M91 43 35 82M64 28 99 69M28 58 83 92" stroke-opacity="0.35"/>
+  </g>
+  <g fill="none" stroke="#158cff" stroke-opacity="0.5" stroke-width="0.9" stroke-dasharray="2.2 2.2">
+    <circle cx="58" cy="63" r="17"/>
+    <circle cx="58" cy="63" r="30"/>
+    <circle cx="58" cy="63" r="42"/>
+  </g>
+  <g fill="#e8f7ff" stroke="#5cc7ff" stroke-width="1.4" filter="url(#glow)">
+    <circle cx="64" cy="28" r="3.6"/><circle cx="34" cy="40" r="3.6"/><circle cx="91" cy="43" r="3.6"/>
+    <circle cx="28" cy="58" r="3.6"/><circle cx="58" cy="63" r="4.2"/><circle cx="99" cy="69" r="3.6"/>
+    <circle cx="35" cy="82" r="3.6"/><circle cx="83" cy="92" r="3.6"/><circle cx="58" cy="101" r="3.6"/>
+  </g>
+</svg>
