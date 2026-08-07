@@ -31,7 +31,7 @@ jobs:
           test -s website/index.html
           test -s website/current-work/index.html
           test -s website/current-work/current-work.css
-          test -s website/assets/treehouse-logo.png
+          test -s website/assets/treehouse-logo.svg
           test -s infrastructure/template.yaml
 
           if find website -type l -print -quit | grep -q .; then
@@ -39,7 +39,7 @@ jobs:
             exit 1
           fi
 
-          grep -Fq 'src="/assets/treehouse-logo.png"' website/current-work/index.html
+          grep -Fq "url('/assets/treehouse-logo.svg')" website/current-work/current-work.css
 
           while IFS= read -r -d '' file; do
             grep -Fq '</html>' "$file" || {
