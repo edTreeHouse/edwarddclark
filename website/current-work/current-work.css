@@ -111,6 +111,10 @@
   height: clamp(5rem, 8vw, 6.5rem);
   flex: 0 0 auto;
   object-fit: contain;
+  object-position: 10000px 10000px;
+  background: url('/assets/treehouse-logo.svg') center / contain no-repeat;
+  color: transparent;
+  font-size: 0;
 }
 
 .engagement-grid {
