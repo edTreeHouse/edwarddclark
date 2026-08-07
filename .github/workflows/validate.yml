@@ -3,10 +3,6 @@ name: Validate website
 on:
   pull_request:
     branches: [main]
-    paths:
-      - website/**
-      - infrastructure/**
-      - .github/workflows/**
   workflow_dispatch:
 
 permissions:
@@ -14,6 +10,7 @@ permissions:
 
 jobs:
   validate:
+    name: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
