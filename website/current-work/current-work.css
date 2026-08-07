@@ -79,14 +79,22 @@
   color: var(--text);
 }
 
-.initiative-heading {
+.status-completed {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.initiative-heading,
+.consulting-heading {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.25rem;
 }
 
-.initiative-heading h2 {
+.initiative-heading h2,
+.consulting-heading h2 {
   margin: 0;
 }
 
@@ -96,6 +104,55 @@
   flex: 0 0 auto;
   border-radius: 0.8rem;
   object-fit: contain;
+}
+
+.treehouse-logo {
+  width: clamp(5rem, 8vw, 6.5rem);
+  height: clamp(5rem, 8vw, 6.5rem);
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.engagement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.engagement-card {
+  min-height: 15rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, rgba(97, 219, 200, 0.045), rgba(255, 255, 255, 0.018));
+}
+
+.engagement-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.engagement-label {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.73rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.engagement-card h4 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.28rem;
+  line-height: 1.2;
+}
+
+.engagement-card > p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .csi-platform-heading {
@@ -127,7 +184,8 @@
 }
 
 @media (max-width: 52rem) {
-  .work-item-head {
+  .work-item-head,
+  .engagement-card-head {
     flex-direction: column;
     gap: 1rem;
   }
@@ -136,11 +194,23 @@
     white-space: normal;
   }
 
-  .csi-platform-heading {
+  .csi-platform-heading,
+  .engagement-grid {
     grid-template-columns: 1fr;
   }
 
   .csi-research-visual {
     max-width: 24rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .consulting-heading {
+    align-items: flex-start;
+  }
+
+  .treehouse-logo {
+    width: 4.8rem;
+    height: 4.8rem;
   }
 }
