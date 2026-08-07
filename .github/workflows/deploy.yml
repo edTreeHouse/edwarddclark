@@ -157,12 +157,12 @@ jobs:
 
           curl --fail --silent --show-error --location \
             --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/outputs/outputs.css?v=2" \
+            "https://${DOMAIN_NAME}/outputs/outputs.css?v=3" \
             --output /tmp/outputs.css
 
           curl --fail --silent --show-error --location \
             --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=2" \
+            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=4" \
             --output /tmp/research-outputs-hero.webp
 
           cmp website/current-work/index.html /tmp/current-work.html
@@ -174,4 +174,4 @@ jobs:
           cmp website/outputs/outputs.css /tmp/outputs.css
           cmp website/assets/research-outputs-hero.webp /tmp/research-outputs-hero.webp
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
-          grep -Fq '/assets/research-outputs-hero.webp?v=2' /tmp/outputs.html
+          grep -Fq '/assets/research-outputs-hero.webp?v=4' /tmp/outputs.html
