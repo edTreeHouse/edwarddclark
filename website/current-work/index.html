@@ -60,11 +60,67 @@
   </header>
 
   <main>
-    <section class="page-hero current-work-hero" aria-labelledby="page-title">
-      <p class="eyebrow">Current work</p>
-      <h1 id="page-title">What I am actively building, testing, and refining.</h1>
-      <p class="lede">A maintained view of the research, technical architecture, academic work, and applied innovation currently in motion.</p>
-      <p class="updated-note">Last updated <time datetime="2026-08-07">August 7, 2026</time></p>
+    <section class="page-hero current-work-hero current-work-hero--visual" aria-labelledby="page-title">
+      <div class="current-work-hero-copy">
+        <p class="eyebrow">Current work</p>
+        <h1 id="page-title">What I am actively building, testing, and refining.</h1>
+        <p class="lede">A maintained view of the research, technical architecture, academic work, and applied innovation currently in motion.</p>
+        <p class="updated-note">Last updated <time datetime="2026-08-07">August 7, 2026</time></p>
+      </div>
+
+      <div class="current-work-constellation" aria-label="Current work streams rooted in TreeHouse Consulting Services">
+        <svg class="constellation-branches" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <path class="constellation-branch branch-csi" d="M50 75 C50 58 50 40 50 20"></path>
+          <path class="constellation-branch branch-uel" d="M48 68 C38 56 29 45 22 34"></path>
+          <path class="constellation-branch branch-vibe" d="M52 68 C63 55 71 45 79 34"></path>
+          <path class="constellation-branch branch-architecture" d="M54 73 C66 70 76 66 83 59"></path>
+        </svg>
+
+        <div class="constellation-tree" aria-hidden="true">
+          <span class="constellation-tree-glow"></span>
+          <img src="/assets/treehouse-logo.svg" alt="">
+        </div>
+
+        <a class="constellation-node node-csi" href="#research-work-title" aria-label="Collective-State Inference research">
+          <span class="constellation-ring"></span>
+          <span class="constellation-node-inner">
+            <img src="/assets/csi-sphere-mark.svg" alt="">
+          </span>
+          <span class="constellation-node-label">CSI</span>
+        </a>
+
+        <a class="constellation-node node-uel" href="#academic-title" aria-label="Executive MBA in Artificial Intelligence at the University of East London">
+          <span class="constellation-ring"></span>
+          <span class="constellation-node-inner node-inner-light">
+            <img src="/assets/uel-mono.jpg" alt="">
+          </span>
+          <span class="constellation-node-label">MBA / UEL</span>
+        </a>
+
+        <a class="constellation-node node-vibe" href="#venture-title" aria-label="Vibe Village">
+          <span class="constellation-ring"></span>
+          <span class="constellation-node-inner">
+            <img src="https://vibevillage.net/wp-content/uploads/2024/11/vibevillageappicon152x152_mod-82993.png" alt="">
+          </span>
+          <span class="constellation-node-label">Vibe Village</span>
+        </a>
+
+        <a class="constellation-node node-architecture" href="#architecture-title" aria-label="Enterprise AI architecture">
+          <span class="constellation-ring"></span>
+          <span class="constellation-node-inner constellation-architecture-mark" aria-hidden="true">
+            <svg viewBox="0 0 72 72" focusable="false">
+              <path d="M16 50h40M22 36h28M28 22h16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+              <circle cx="16" cy="50" r="4" fill="currentColor"></circle>
+              <circle cx="56" cy="50" r="4" fill="currentColor"></circle>
+              <circle cx="22" cy="36" r="4" fill="currentColor"></circle>
+              <circle cx="50" cy="36" r="4" fill="currentColor"></circle>
+              <circle cx="28" cy="22" r="4" fill="currentColor"></circle>
+              <circle cx="44" cy="22" r="4" fill="currentColor"></circle>
+            </svg>
+          </span>
+          <span class="constellation-node-label">Architecture</span>
+        </a>
+      </div>
     </section>
 
     <section class="section" aria-labelledby="research-work-title">
