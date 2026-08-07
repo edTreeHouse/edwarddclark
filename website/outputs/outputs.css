@@ -8,10 +8,18 @@
   margin-inline: calc(50% - 50vw);
   padding: clamp(6rem, 12vw, 10rem) max(1.5rem, calc((100vw - var(--content)) / 2)) clamp(5rem, 9vw, 8rem);
   overflow: hidden;
-  background-image: url('/assets/research-outputs-hero.webp');
-  background-size: cover;
-  background-position: center;
   border-bottom: 1px solid var(--line);
+}
+
+.outputs-hero-image {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .outputs-hero::before {
@@ -20,8 +28,8 @@
   inset: 0;
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(7, 21, 33, 0.94) 0%, rgba(7, 21, 33, 0.82) 42%, rgba(7, 21, 33, 0.53) 68%, rgba(7, 21, 33, 0.35) 100%),
-    linear-gradient(180deg, rgba(7, 21, 33, 0.22) 0%, rgba(7, 21, 33, 0.16) 50%, rgba(7, 21, 33, 0.58) 100%);
+    linear-gradient(90deg, rgba(7, 21, 33, 0.93) 0%, rgba(7, 21, 33, 0.80) 42%, rgba(7, 21, 33, 0.50) 68%, rgba(7, 21, 33, 0.30) 100%),
+    linear-gradient(180deg, rgba(7, 21, 33, 0.18) 0%, rgba(7, 21, 33, 0.13) 50%, rgba(7, 21, 33, 0.56) 100%);
 }
 
 .outputs-hero::after {
@@ -47,26 +55,32 @@
 
 .outputs-hero .lede {
   max-width: 42rem;
-  color: rgba(224, 233, 239, 0.82);
+  color: rgba(224, 233, 239, 0.84);
   text-shadow: 0 0.06em 0.3em rgba(0, 0, 0, 0.32);
 }
 
 @media (max-width: 52rem) {
   .outputs-hero {
     min-height: 38rem;
-    background-position: 66% center;
+  }
+
+  .outputs-hero-image {
+    object-position: 66% center;
   }
 
   .outputs-hero::before {
     background:
-      linear-gradient(90deg, rgba(7, 21, 33, 0.95) 0%, rgba(7, 21, 33, 0.86) 58%, rgba(7, 21, 33, 0.55) 100%),
-      linear-gradient(180deg, rgba(7, 21, 33, 0.26) 0%, rgba(7, 21, 33, 0.34) 58%, rgba(7, 21, 33, 0.72) 100%);
+      linear-gradient(90deg, rgba(7, 21, 33, 0.95) 0%, rgba(7, 21, 33, 0.85) 58%, rgba(7, 21, 33, 0.52) 100%),
+      linear-gradient(180deg, rgba(7, 21, 33, 0.23) 0%, rgba(7, 21, 33, 0.31) 58%, rgba(7, 21, 33, 0.70) 100%);
   }
 }
 
 @media (max-width: 40rem) {
   .outputs-hero {
     min-height: 34rem;
-    background-position: 72% center;
+  }
+
+  .outputs-hero-image {
+    object-position: 72% center;
   }
 }
