@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="t d">
+<title id="t">Collective-state inference network</title>
+<desc id="d">A luminous bounded network of interconnected nodes representing emergent collective conditions.</desc>
+<defs>
+  <radialGradient id="field"><stop offset="0" stop-color="#0f6770" stop-opacity=".48"/><stop offset=".5" stop-color="#073b4d" stop-opacity=".16"/><stop offset="1" stop-color="#071521" stop-opacity="0"/></radialGradient>
+  <radialGradient id="core"><stop offset="0" stop-color="#fffde0"/><stop offset=".16" stop-color="#baffee"/><stop offset=".5" stop-color="#61dbc8" stop-opacity=".34"/><stop offset="1" stop-color="#61dbc8" stop-opacity="0"/></radialGradient>
+  <filter id="g" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+</defs>
+<circle cx="360" cy="360" r="326" fill="url(#field)"/>
+<g fill="none" stroke="#4bd2d0" stroke-linecap="round">
+  <circle cx="360" cy="360" r="294" stroke-opacity=".12"/>
+  <ellipse cx="360" cy="360" rx="308" ry="235" transform="rotate(18 360 360)" stroke-opacity=".18" stroke-dasharray="1 9"/>
+  <ellipse cx="360" cy="360" rx="270" ry="316" transform="rotate(-34 360 360)" stroke-opacity=".14" stroke-dasharray="1 8"/>
+  <path d="M110 325 Q310 155 520 320" stroke-opacity=".38"/>
+  <path d="M160 287 Q352 178 590 455" stroke-opacity=".32"/>
+  <path d="M92 404 Q300 255 602 375" stroke-opacity=".26"/>
+  <path d="M138 518 Q350 420 591 491" stroke-opacity=".26"/>
+  <path d="M196 572 Q330 390 511 141" stroke-opacity=".31"/>
+  <path d="M250 230 Q390 355 517 526" stroke-opacity=".31"/>
+  <path d="M301 154 Q350 330 333 605" stroke-opacity=".24"/>
+  <path d="M462 118 Q360 360 231 588" stroke-opacity=".31"/>
+  <path d="M591 491 Q455 340 250 230" stroke-opacity=".22"/>
+  <path d="M602 375 Q420 445 196 572" stroke-opacity=".22"/>
+</g>
+<g stroke="#94eee2" stroke-opacity=".32" stroke-width="1">
+  <path d="M113 326 L160 287 L250 230 L337 191 L462 118 L511 141 L509 274 L521 319 L602 375 L591 455 L591 491 L517 526 L438 567 L333 605 L231 588 L196 572 L138 518 L92 404 Z" fill="none"/>
+  <path d="M160 287 L297 260 L356 202 L453 267 L509 274 L542 391 L490 450 L438 567 L300 430 L245 523 L188 358 L160 287" fill="none"/>
+  <path d="M250 230 L360 365 L455 290 L542 391 L300 430 L188 358 L250 230" fill="none"/>
+  <path d="M337 191 L455 290 L520 319 M360 365 L333 605 M300 430 L231 588 M490 450 L517 526" fill="none"/>
+</g>
+<g fill="#61dbc8" opacity=".8">
+  <circle cx="130" cy="190" r="1.5"/><circle cx="575" cy="214" r="1.2"/><circle cx="624" cy="300" r="1.4"/><circle cx="606" cy="425" r="1.2"/><circle cx="544" cy="560" r="1.4"/><circle cx="430" cy="635" r="1.3"/><circle cx="270" cy="638" r="1.1"/><circle cx="112" cy="504" r="1.2"/><circle cx="74" cy="370" r="1.3"/><circle cx="170" cy="165" r="1.3"/><circle cx="310" cy="96" r="1.2"/><circle cx="420" cy="110" r="1.1"/>
+</g>
+<g fill="#61dbc8">
+  <circle cx="160" cy="287" r="3"/><circle cx="297" cy="260" r="3"/><circle cx="356" cy="202" r="3"/><circle cx="453" cy="267" r="3"/><circle cx="509" cy="274" r="3"/><circle cx="542" cy="391" r="3"/><circle cx="490" cy="450" r="3"/><circle cx="438" cy="567" r="3"/><circle cx="245" cy="523" r="3"/><circle cx="188" cy="358" r="3"/>
+</g>
+<g fill="#f4fff9">
+  <circle cx="113" cy="326" r="6"/><circle cx="250" cy="230" r="6"/><circle cx="511" cy="141" r="6"/><circle cx="602" cy="375" r="6"/><circle cx="591" cy="491" r="6"/><circle cx="333" cy="605" r="6"/><circle cx="196" cy="572" r="6"/>
+</g>
+<circle cx="360" cy="365" r="68" fill="url(#core)" filter="url(#g)" opacity=".74"/>
+<circle cx="300" cy="430" r="43" fill="url(#core)" filter="url(#g)" opacity=".58"/>
+<circle cx="455" cy="290" r="38" fill="url(#core)" filter="url(#g)" opacity=".55"/>
+<circle cx="360" cy="365" r="8" fill="#fffde6"/><circle cx="300" cy="430" r="7" fill="#fffde6"/><circle cx="455" cy="290" r="6" fill="#fffde6"/>
+</svg>
