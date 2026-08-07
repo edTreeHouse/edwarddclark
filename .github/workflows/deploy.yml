@@ -140,12 +140,17 @@ jobs:
             "https://${DOMAIN_NAME}/current-work/" \
             --output /tmp/current-work.html
 
-          cmp website/current-work/index.html /tmp/current-work.html
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/current-work/current-work.css" \
+            --output /tmp/current-work.css
 
           curl --fail --silent --show-error --location \
             --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/treehouse-logo.png" \
-            --output /tmp/treehouse-logo.png
+            "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" \
+            --output /tmp/treehouse-logo.svg
 
-          cmp website/assets/treehouse-logo.png /tmp/treehouse-logo.png
-          grep -Fq 'src="/assets/treehouse-logo.png"' /tmp/current-work.html
+          cmp website/current-work/index.html /tmp/current-work.html
+          cmp website/current-work/current-work.css /tmp/current-work.css
+          cmp website/assets/treehouse-logo.svg /tmp/treehouse-logo.svg
+          grep -Fq "url('/assets/treehouse-logo.svg')" /tmp/current-work.css
