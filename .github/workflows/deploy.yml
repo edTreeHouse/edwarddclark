@@ -150,7 +150,28 @@ jobs:
             "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" \
             --output /tmp/treehouse-logo.svg
 
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/" \
+            --output /tmp/outputs.html
+
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/outputs.css?v=2" \
+            --output /tmp/outputs.css
+
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=2" \
+            --output /tmp/research-outputs-hero.webp
+
           cmp website/current-work/index.html /tmp/current-work.html
           cmp website/current-work/current-work.css /tmp/current-work.css
           cmp website/assets/treehouse-logo.svg /tmp/treehouse-logo.svg
           grep -Fq "url('/assets/treehouse-logo.svg')" /tmp/current-work.css
+
+          cmp website/outputs/index.html /tmp/outputs.html
+          cmp website/outputs/outputs.css /tmp/outputs.css
+          cmp website/assets/research-outputs-hero.webp /tmp/research-outputs-hero.webp
+          grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
+          grep -Fq '/assets/research-outputs-hero.webp?v=2' /tmp/outputs.html
