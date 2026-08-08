@@ -21,6 +21,7 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   STACK_NAME: edwarddclark-website
+  OBSERVATORY_STACK_NAME: edwarddclark-site-observatory
   DOMAIN_NAME: edwarddclark.com
   HOSTED_ZONE_ID: Z0974116K34TIFVG51RG
 
@@ -109,6 +110,24 @@ jobs:
               --content-type "text/html"
           done
 
+      - name: Restore Observatory telemetry configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
+            API_ENDPOINT="$(aws cloudformation describe-stacks \
+              --stack-name "${OBSERVATORY_STACK_NAME}" \
+              --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue | [0]" \
+              --output text)"
+            test -n "${API_ENDPOINT}" && test "${API_ENDPOINT}" != "None"
+            printf '{"enabled":true,"endpoint":"%s"}\n' "${API_ENDPOINT}" > /tmp/telemetry-config.json
+            aws s3 cp /tmp/telemetry-config.json \
+              "s3://${{ steps.stack.outputs.bucket }}/telemetry-config.json" \
+              --content-type "application/json" \
+              --cache-control "no-store,max-age=0" \
+              --only-show-errors
+          fi
+
       - name: Invalidate CloudFront
         id: invalidate
         shell: bash
@@ -165,6 +184,11 @@ jobs:
             "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" \
             --output /tmp/research-outputs-hero.webp
 
+          curl --fail --silent --show-error --location \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/telemetry-config.json" \
+            --output /tmp/telemetry-config.json
+
           cmp website/current-work/index.html /tmp/current-work.html
           cmp website/current-work/current-work.css /tmp/current-work.css
           cmp website/assets/treehouse-logo.svg /tmp/treehouse-logo.svg
@@ -176,3 +200,9 @@ jobs:
           test "$(wc -c < /tmp/research-outputs-hero.webp)" -eq 11198
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
           grep -Fq '/assets/research-outputs-hero.webp?v=5' /tmp/outputs.html
+
+          if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
+            jq -e '.enabled == true and (.endpoint | startswith("https://"))' /tmp/telemetry-config.json >/dev/null
+          else
+            jq -e '.enabled == false' /tmp/telemetry-config.json >/dev/null
+          fi
