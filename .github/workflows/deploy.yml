@@ -12,6 +12,7 @@ on:
     branches: [main]
     paths:
       - website/**
+      - .github/site-assets/**
       - .github/workflows/deploy.yml
 
 concurrency:
@@ -38,6 +39,15 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+
+      - name: Materialize Research hero asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p website/assets
+          cat .github/site-assets/research-hero/part-*.b64 | tr -d '\r\n' | base64 --decode > website/assets/research-hero.webp
+          test -s website/assets/research-hero.webp
+          file website/assets/research-hero.webp | grep -q 'Web/P image'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
@@ -135,35 +145,26 @@ jobs:
         run: |
           set -euo pipefail
 
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/current-work/" \
-            --output /tmp/current-work.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/current-work/" --output /tmp/current-work.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/current-work/current-work.css" --output /tmp/current-work.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" --output /tmp/treehouse-logo.svg
 
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/current-work/current-work.css" \
-            --output /tmp/current-work.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/" --output /tmp/outputs.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/outputs.css?v=3" --output /tmp/outputs.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" --output /tmp/research-outputs-hero.webp
 
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" \
-            --output /tmp/treehouse-logo.svg
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/outputs/" \
-            --output /tmp/outputs.html
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/outputs/outputs.css?v=3" \
-            --output /tmp/outputs.css
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" \
-            --output /tmp/research-outputs-hero.webp
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/research/" --output /tmp/research.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/research/research.css?v=1" --output /tmp/research.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/research-hero.webp?v=1" --output /tmp/research-hero.webp
 
           cmp website/current-work/index.html /tmp/current-work.html
           cmp website/current-work/current-work.css /tmp/current-work.css
@@ -176,3 +177,9 @@ jobs:
           test "$(wc -c < /tmp/research-outputs-hero.webp)" -eq 11198
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
           grep -Fq '/assets/research-outputs-hero.webp?v=5' /tmp/outputs.html
+
+          cmp website/research/index.html /tmp/research.html
+          cmp website/research/research.css /tmp/research.css
+          cmp website/assets/research-hero.webp /tmp/research-hero.webp
+          grep -Fq 'class="research-hero-image"' /tmp/research.html
+          grep -Fq '/assets/research-hero.webp?v=1' /tmp/research.html
