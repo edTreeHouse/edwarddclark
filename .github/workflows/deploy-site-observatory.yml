@@ -55,7 +55,7 @@ jobs:
           node --check website/attribution.js
 
           grep -Fq "Global Privacy Control" infrastructure/observatory/README.md
-          grep -Fq "raw IP" infrastructure/observatory/README.md
+          grep -Fiq "raw IP" infrastructure/observatory/README.md
           grep -Fq 'meta name="robots" content="noindex,nofollow,noarchive"' site-observatory/index.html
           grep -Fq "navigator.globalPrivacyControl" website/attribution.js
           grep -Fq "navigator.doNotTrack" website/attribution.js
@@ -178,7 +178,7 @@ jobs:
             --only-show-errors
 
       - name: Remove deployment artifact
-        if: always()
+        if: always() && steps.public.outputs.bucket != '' && steps.package.outputs.key != ''
         shell: bash
         run: |
           aws s3 rm \
