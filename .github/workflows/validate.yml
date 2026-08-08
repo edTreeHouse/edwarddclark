@@ -32,6 +32,7 @@ jobs:
           test -s website/current-work/index.html
           test -s website/current-work/current-work.css
           test -s website/assets/treehouse-logo.svg
+          test -s website/attribution.js
           test -s infrastructure/template.yaml
 
           if find website -type l -print -quit | grep -q .; then
@@ -40,6 +41,21 @@ jobs:
           fi
 
           grep -Fq "url('/assets/treehouse-logo.svg')" website/current-work/current-work.css
+
+          for file in \
+            website/index.html \
+            website/about/index.html \
+            website/research/index.html \
+            website/outputs/index.html \
+            website/current-work/index.html; do
+            grep -Fq '<script src="/attribution.js" defer></script>' "$file" || {
+              echo "Attribution script is not loaded by $file" >&2
+              exit 1
+            }
+          done
+
+          grep -Fq "utm_source" website/attribution.js
+          grep -Fq "via', 'edwarddclark.com'" website/attribution.js
 
           while IFS= read -r -d '' file; do
             grep -Fq '</html>' "$file" || {
