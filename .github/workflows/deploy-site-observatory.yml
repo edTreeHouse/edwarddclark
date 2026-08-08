@@ -102,11 +102,24 @@ jobs:
           aws cloudformation validate-template \
             --template-body file://infrastructure/observatory/template.yaml >/dev/null
 
+      - name: Recover failed create stack if necessary
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS="$(aws cloudformation describe-stacks \
+            --stack-name "${OBSERVATORY_STACK_NAME}" \
+            --query 'Stacks[0].StackStatus' --output text 2>/dev/null || true)"
+          if [ "${STATUS}" = "ROLLBACK_COMPLETE" ]; then
+            echo "Removing prior ROLLBACK_COMPLETE stack before retry."
+            aws cloudformation delete-stack --stack-name "${OBSERVATORY_STACK_NAME}"
+            aws cloudformation wait stack-delete-complete --stack-name "${OBSERVATORY_STACK_NAME}"
+          fi
+
       - name: Deploy Observatory infrastructure
         shell: bash
         run: |
           set -euo pipefail
-          aws cloudformation deploy \
+          if ! aws cloudformation deploy \
             --stack-name "${OBSERVATORY_STACK_NAME}" \
             --template-file infrastructure/observatory/template.yaml \
             --capabilities CAPABILITY_NAMED_IAM \
@@ -123,7 +136,15 @@ jobs:
               DigestFromEmail="notifications@collectivestateinference.org" \
               ReplyToEmail="ed@collectivestateinference.org" \
               RetentionDays="30" \
-            --tags Application="EdwardDClark.com Site Observatory" Environment=Production
+            --tags Application="EdwardDClark.com Site Observatory" Environment=Production; then
+            echo "::group::Recent CloudFormation failure events"
+            aws cloudformation describe-stack-events \
+              --stack-name "${OBSERVATORY_STACK_NAME}" \
+              --query "StackEvents[?contains(ResourceStatus, 'FAILED') || contains(ResourceStatus, 'ROLLBACK')].[Timestamp,LogicalResourceId,ResourceType,ResourceStatus,ResourceStatusReason]" \
+              --output table || true
+            echo "::endgroup::"
+            exit 1
+          fi
 
       - name: Generate runtime configuration
         id: runtime
