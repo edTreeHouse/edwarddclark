@@ -6,6 +6,7 @@ on:
     paths:
       - website/**
       - infrastructure/**
+      - .github/site-assets/**
       - .github/workflows/**
   workflow_dispatch:
 
@@ -23,12 +24,24 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Materialize Research hero asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p website/assets
+          cat .github/site-assets/research-hero/part-*.b64 | tr -d '\r\n' | base64 --decode > website/assets/research-hero.webp
+          test -s website/assets/research-hero.webp
+          file website/assets/research-hero.webp | grep -q 'Web/P image'
+
       - name: Validate repository structure
         shell: bash
         run: |
           set -euo pipefail
 
           test -s website/index.html
+          test -s website/research/index.html
+          test -s website/research/research.css
+          test -s website/assets/research-hero.webp
           test -s website/current-work/index.html
           test -s website/current-work/current-work.css
           test -s website/assets/treehouse-logo.svg
@@ -40,6 +53,8 @@ jobs:
           fi
 
           grep -Fq "url('/assets/treehouse-logo.svg')" website/current-work/current-work.css
+          grep -Fq 'class="research-hero-image"' website/research/index.html
+          grep -Fq '/assets/research-hero.webp?v=1' website/research/index.html
 
           while IFS= read -r -d '' file; do
             grep -Fq '</html>' "$file" || {
