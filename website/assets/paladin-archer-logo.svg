@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 790" role="img" aria-labelledby="title">
   <title id="title">Paladin &amp; Archer logo</title>
+  <!-- Render the original supplied PNG without altering the artwork. -->
   <image href="/assets/paladin-archer-logo.png" x="0" y="0" width="790" height="790" preserveAspectRatio="xMidYMid meet"/>
 </svg>
