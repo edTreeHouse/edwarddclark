@@ -6,6 +6,8 @@ on:
     paths:
       - website/**
       - infrastructure/**
+      - functions/**
+      - site-observatory/**
       - .github/workflows/**
   workflow_dispatch:
 
@@ -33,10 +35,18 @@ jobs:
           test -s website/current-work/current-work.css
           test -s website/assets/treehouse-logo.svg
           test -s website/attribution.js
+          test -s website/telemetry-config.json
           test -s infrastructure/template.yaml
+          test -s infrastructure/observatory/template.yaml
+          test -s infrastructure/observatory/README.md
+          test -s functions/site-observatory/app.py
+          test -s site-observatory/index.html
+          test -s site-observatory/styles.css
+          test -s site-observatory/app.js
+          test -s .github/workflows/deploy-site-observatory.yml
 
-          if find website -type l -print -quit | grep -q .; then
-            echo "Symbolic links are not allowed under website/." >&2
+          if find website site-observatory -type l -print -quit | grep -q .; then
+            echo "Symbolic links are not allowed under website/ or site-observatory/." >&2
             exit 1
           fi
 
@@ -56,31 +66,57 @@ jobs:
 
           grep -Fq "utm_source" website/attribution.js
           grep -Fq "via', 'edwarddclark.com'" website/attribution.js
+          grep -Fq "navigator.globalPrivacyControl" website/attribution.js
+          grep -Fq "navigator.doNotTrack" website/attribution.js
+          grep -Fq "edc-site-session-v1" website/attribution.js
+          jq -e '.enabled == false and .endpoint == ""' website/telemetry-config.json >/dev/null
+
+          grep -Fq 'meta name="robots" content="noindex,nofollow,noarchive"' site-observatory/index.html
+          grep -Fq 'RouteKey: GET /overview' infrastructure/observatory/template.yaml
+          grep -Fq 'AuthorizationType: JWT' infrastructure/observatory/template.yaml
+          grep -Fq 'TimeToLiveSpecification:' infrastructure/observatory/template.yaml
+          grep -Fiq 'raw IP' infrastructure/observatory/README.md
+
+          python3 -m py_compile functions/site-observatory/app.py
+          node --check website/attribution.js
+          node --check site-observatory/app.js
 
           while IFS= read -r -d '' file; do
             grep -Fq '</html>' "$file" || {
               echo "Missing closing </html> tag: $file" >&2
               exit 1
             }
-          done < <(find website -name '*.html' -print0)
+          done < <(find website site-observatory -name '*.html' -print0)
 
-      - name: Validate CloudFormation syntax
+      - name: Validate CloudFormation syntax markers
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
 
-          template = Path('infrastructure/template.yaml')
-          text = template.read_text(encoding='utf-8')
-          required = (
-              "AWSTemplateFormatVersion:",
-              "Resources:",
-              "WebsiteBucket:",
-              "WebsiteDistribution:",
-              "Outputs:",
-          )
-          missing = [item for item in required if item not in text]
-          if missing:
-              raise SystemExit(f"CloudFormation template is missing required sections: {missing}")
+          checks = {
+              Path('infrastructure/template.yaml'): (
+                  'AWSTemplateFormatVersion:',
+                  'Resources:',
+                  'WebsiteBucket:',
+                  'WebsiteDistribution:',
+                  'Outputs:',
+              ),
+              Path('infrastructure/observatory/template.yaml'): (
+                  'AWSTemplateFormatVersion:',
+                  'Resources:',
+                  'SiteEventsTable:',
+                  'ObservatoryUserPool:',
+                  'ObservatoryApi:',
+                  'ObservatoryDistribution:',
+                  'Outputs:',
+              ),
+          }
+
+          for template, required in checks.items():
+              text = template.read_text(encoding='utf-8')
+              missing = [item for item in required if item not in text]
+              if missing:
+                  raise SystemExit(f'{template} is missing required sections: {missing}')
           PY
