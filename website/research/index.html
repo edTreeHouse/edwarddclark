@@ -21,6 +21,7 @@
   <meta name="twitter:image" content="https://edwarddclark.com/assets/csi-research-ecosystem.png">
   <meta name="theme-color" content="#071521">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/research/research.css?v=2">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -61,7 +62,8 @@
   </header>
 
   <main>
-    <section class="page-hero" aria-labelledby="page-title">
+    <section class="page-hero research-hero" aria-labelledby="page-title">
+      <img id="research-hero-image" class="research-hero-image" alt="" aria-hidden="true">
       <p class="eyebrow">Research agenda</p>
       <h1 id="page-title">Understanding collectives as first-class objects of inference</h1>
       <p class="lede">My research examines how artificial intelligence can infer latent, emergent conditions of bounded collectives from observable interaction patterns—without reducing the collective to a simple aggregation of individuals.</p>
@@ -109,6 +111,29 @@
     <p>© <span id="year"></span> Edward D. Clark</p>
     <p>Researcher · AI Architect · Entrepreneur</p>
   </footer>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    (async () => {
+      const image = document.getElementById('research-hero-image');
+      try {
+        const parts = await Promise.all(
+          Array.from({ length: 10 }, (_, index) => {
+            const part = String(index).padStart(2, '0');
+            return fetch(`/assets/research-hero/part-${part}.b64?v=1`, { cache: 'force-cache' }).then(response => {
+              if (!response.ok) throw new Error(`Research hero part ${part} failed: ${response.status}`);
+              return response.text();
+            });
+          })
+        );
+        const encoded = parts.join('').replace(/\s+/g, '');
+        const binary = atob(encoded);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+        image.src = URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
+      } catch (error) {
+        console.error('Unable to load Research hero image.', error);
+      }
+    })();
+  </script>
 </body>
 </html>
