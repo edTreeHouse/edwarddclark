@@ -219,5 +219,15 @@
     }
   };
 
+  const applyCurrentWorkBranding = () => {
+    if (!window.location.pathname.startsWith('/current-work')) return;
+    const logoPath = '/assets/paladin-archer-logo.svg';
+    const sectionLogo = document.querySelector('.pa-logo');
+    if (sectionLogo) sectionLogo.src = logoPath;
+    const architectureMark = document.querySelector('.constellation-architecture-mark');
+    if (architectureMark) architectureMark.innerHTML = `<img src="${logoPath}" alt="">`;
+  };
+
+  applyCurrentWorkBranding();
   initializeTelemetry();
 })();
