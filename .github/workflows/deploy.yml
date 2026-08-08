@@ -114,18 +114,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          API_ENDPOINT=""
           if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
             API_ENDPOINT="$(aws cloudformation describe-stacks \
               --stack-name "${OBSERVATORY_STACK_NAME}" \
               --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue | [0]" \
               --output text)"
-            test -n "${API_ENDPOINT}" && test "${API_ENDPOINT}" != "None"
+          fi
+
+          if [[ -n "${API_ENDPOINT}" && "${API_ENDPOINT}" != "None" ]]; then
             printf '{"enabled":true,"endpoint":"%s"}\n' "${API_ENDPOINT}" > /tmp/telemetry-config.json
             aws s3 cp /tmp/telemetry-config.json \
               "s3://${{ steps.stack.outputs.bucket }}/telemetry-config.json" \
               --content-type "application/json" \
               --cache-control "no-store,max-age=0" \
               --only-show-errors
+          else
+            echo "No Observatory ApiEndpoint output is present; keeping repository telemetry configuration."
           fi
 
       - name: Invalidate CloudFront
@@ -201,8 +206,18 @@ jobs:
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
           grep -Fq '/assets/research-outputs-hero.webp?v=5' /tmp/outputs.html
 
+          API_ENDPOINT=""
           if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
-            jq -e '.enabled == true and (.endpoint | startswith("https://"))' /tmp/telemetry-config.json >/dev/null
+            API_ENDPOINT="$(aws cloudformation describe-stacks \
+              --stack-name "${OBSERVATORY_STACK_NAME}" \
+              --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue | [0]" \
+              --output text)"
+          fi
+
+          if [[ -n "${API_ENDPOINT}" && "${API_ENDPOINT}" != "None" ]]; then
+            jq -e --arg endpoint "${API_ENDPOINT}" \
+              '.enabled == true and .endpoint == $endpoint' \
+              /tmp/telemetry-config.json >/dev/null
           else
             jq -e '.enabled == false' /tmp/telemetry-config.json >/dev/null
           fi
