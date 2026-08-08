@@ -86,7 +86,7 @@
   const api = async () => {
     const token = sessionStorage.getItem(tokenKey);
     if (!token) throw new Error('SIGN_IN_REQUIRED');
-    const response = await fetch(`${config.apiBaseUrl}/overview`, {
+    const response = await fetch(`${config.apiBaseUrl.replace(/\/+$/, '')}/personal-site`, {
       headers: {authorization: `Bearer ${token}`},
       cache: 'no-store'
     });
@@ -129,7 +129,7 @@
       track.className = 'rank-track';
       const fill = document.createElement('span');
       fill.className = 'rank-fill';
-      fill.style.width = `${Math.max(3, (item.count / max) * 100)}%`;
+      fill.style.width = `${Math.max(3, (Number(item.count || 0) / max) * 100)}%`;
       track.appendChild(fill);
       const count = document.createElement('strong');
       count.className = 'rank-count';
@@ -167,7 +167,7 @@
       value.textContent = item.sessions;
       const bar = document.createElement('div');
       bar.className = 'trend-bar';
-      bar.style.height = `${Math.max(item.sessions ? 5 : 1, (item.sessions / max) * 82)}%`;
+      bar.style.height = `${Math.max(item.sessions ? 5 : 1, (Number(item.sessions || 0) / max) * 82)}%`;
       const label = document.createElement('span');
       label.className = 'trend-label';
       const date = new Date(`${item.date}T00:00:00Z`);
