@@ -1,0 +1,10 @@
+@media (min-width: 64.01rem) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .hero-visual {
+    transform: translateX(max(1.5rem, calc((100vw - var(--content)) / 2))) scale(1.13);
+    transform-origin: center center;
+  }
+}
