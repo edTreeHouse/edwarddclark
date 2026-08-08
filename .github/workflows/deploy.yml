@@ -21,7 +21,6 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   STACK_NAME: edwarddclark-website
-  OBSERVATORY_STACK_NAME: edwarddclark-site-observatory
   DOMAIN_NAME: edwarddclark.com
   HOSTED_ZONE_ID: Z0974116K34TIFVG51RG
 
@@ -110,28 +109,19 @@ jobs:
               --content-type "text/html"
           done
 
-      - name: Restore Observatory telemetry configuration
-        shell: bash
-        run: |
-          set -euo pipefail
-          API_ENDPOINT=""
-          if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
-            API_ENDPOINT="$(aws cloudformation describe-stacks \
-              --stack-name "${OBSERVATORY_STACK_NAME}" \
-              --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue | [0]" \
-              --output text)"
-          fi
+          aws s3 cp website/telemetry-config.json \
+            "s3://${{ steps.stack.outputs.bucket }}/telemetry-config.json" \
+            --cache-control "no-store,max-age=0" \
+            --content-type "application/json" \
+            --only-show-errors
 
-          if [[ -n "${API_ENDPOINT}" && "${API_ENDPOINT}" != "None" ]]; then
-            printf '{"enabled":true,"endpoint":"%s"}\n' "${API_ENDPOINT}" > /tmp/telemetry-config.json
-            aws s3 cp /tmp/telemetry-config.json \
-              "s3://${{ steps.stack.outputs.bucket }}/telemetry-config.json" \
-              --content-type "application/json" \
+          for file in website/observatory/config.js website/observatory/app.js; do
+            key="${file#website/}"
+            aws s3 cp "$file" "s3://${{ steps.stack.outputs.bucket }}/$key" \
               --cache-control "no-store,max-age=0" \
+              --content-type "application/javascript" \
               --only-show-errors
-          else
-            echo "No Observatory ApiEndpoint output is present; keeping repository telemetry configuration."
-          fi
+          done
 
       - name: Invalidate CloudFront
         id: invalidate
@@ -159,40 +149,26 @@ jobs:
         run: |
           set -euo pipefail
 
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/current-work/" \
-            --output /tmp/current-work.html
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/current-work/current-work.css" \
-            --output /tmp/current-work.css
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" \
-            --output /tmp/treehouse-logo.svg
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/outputs/" \
-            --output /tmp/outputs.html
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/outputs/outputs.css?v=3" \
-            --output /tmp/outputs.css
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" \
-            --output /tmp/research-outputs-hero.webp
-
-          curl --fail --silent --show-error --location \
-            --retry 5 --retry-delay 2 --retry-all-errors \
-            "https://${DOMAIN_NAME}/telemetry-config.json" \
-            --output /tmp/telemetry-config.json
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/current-work/" --output /tmp/current-work.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/current-work/current-work.css" --output /tmp/current-work.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/treehouse-logo.svg" --output /tmp/treehouse-logo.svg
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/" --output /tmp/outputs.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/outputs/outputs.css?v=3" --output /tmp/outputs.css
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/assets/research-outputs-hero.webp?v=5" --output /tmp/research-outputs-hero.webp
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/telemetry-config.json" --output /tmp/telemetry-config.json
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/observatory/" --output /tmp/observatory.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/observatory/config.js" --output /tmp/observatory-config.js
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/observatory/app.js" --output /tmp/observatory-app.js
 
           cmp website/current-work/index.html /tmp/current-work.html
           cmp website/current-work/current-work.css /tmp/current-work.css
@@ -206,18 +182,11 @@ jobs:
           grep -Fq 'class="outputs-hero-image"' /tmp/outputs.html
           grep -Fq '/assets/research-outputs-hero.webp?v=5' /tmp/outputs.html
 
-          API_ENDPOINT=""
-          if aws cloudformation describe-stacks --stack-name "${OBSERVATORY_STACK_NAME}" >/dev/null 2>&1; then
-            API_ENDPOINT="$(aws cloudformation describe-stacks \
-              --stack-name "${OBSERVATORY_STACK_NAME}" \
-              --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue | [0]" \
-              --output text)"
-          fi
+          cmp website/observatory/index.html /tmp/observatory.html
+          cmp website/observatory/config.js /tmp/observatory-config.js
+          cmp website/observatory/app.js /tmp/observatory-app.js
+          grep -Fq "Site Observatory" /tmp/observatory.html
+          grep -Fq "/personal-site" /tmp/observatory-app.js
 
-          if [[ -n "${API_ENDPOINT}" && "${API_ENDPOINT}" != "None" ]]; then
-            jq -e --arg endpoint "${API_ENDPOINT}" \
-              '.enabled == true and .endpoint == $endpoint' \
-              /tmp/telemetry-config.json >/dev/null
-          else
-            jq -e '.enabled == false' /tmp/telemetry-config.json >/dev/null
-          fi
+          jq -e '.enabled == true and (.endpoint | startswith("https://"))' \
+            /tmp/telemetry-config.json >/dev/null
