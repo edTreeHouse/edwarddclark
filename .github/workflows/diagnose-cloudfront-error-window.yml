@@ -15,7 +15,7 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: Production
+    environment: production
     env:
       AWS_REGION: us-east-1
       DISTRIBUTION_ID: E3HJ6URHQS31VD
