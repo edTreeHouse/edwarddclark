@@ -161,9 +161,9 @@
 
 .csi-platform-heading {
   display: grid;
-  grid-template-columns: minmax(20rem, 28rem) 1fr;
+  grid-template-columns: minmax(12rem, 19rem) 1fr;
   align-items: center;
-  gap: clamp(1rem, 2vw, 2rem);
+  gap: clamp(1.2rem, 3vw, 2.4rem);
   margin-bottom: 0.25rem;
 }
 
@@ -172,12 +172,12 @@
 }
 
 .csi-research-visual {
-  width: 120%;
-  max-width: none;
+  width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
-  justify-self: center;
+  transform: scale(1.7);
+  transform-origin: right center;
 }
 
 .brand-context {
@@ -496,8 +496,8 @@
   }
 
   .csi-research-visual {
-    width: 100%;
-    max-width: 30rem;
+    max-width: 24rem;
+    transform: none;
     justify-self: center;
   }
 }
