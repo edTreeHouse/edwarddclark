@@ -1,0 +1,108 @@
+name: Diagnose CloudFront error window
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/diagnose-cloudfront-error-window.yml
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: Production
+    env:
+      AWS_REGION: us-east-1
+      DISTRIBUTION_ID: E3HJ6URHQS31VD
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: cloudfront-error-diagnostic-${{ github.run_id }}
+          role-duration-seconds: 900
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Inspect logging configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cf-diagnostic
+          aws cloudfront get-distribution-config --id "${DISTRIBUTION_ID}" --output json \
+            > /tmp/cf-diagnostic/distribution.json
+          jq '{
+            standard_logging: .DistributionConfig.Logging,
+            default_realtime_log_config_arn: (.DistributionConfig.DefaultCacheBehavior.RealtimeLogConfigArn // null),
+            cache_behavior_realtime_log_config_arns: [(.DistributionConfig.CacheBehaviors.Items[]?.RealtimeLogConfigArn // empty)]
+          }' /tmp/cf-diagnostic/distribution.json > /tmp/cf-diagnostic/logging.json
+          cat /tmp/cf-diagnostic/logging.json
+
+      - name: Query alert window metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/cf-diagnostic/queries-5m.json <<'JSON'
+          [
+            {"Id":"requests","MetricStat":{"Metric":{"Namespace":"AWS/CloudFront","MetricName":"Requests","Dimensions":[{"Name":"DistributionId","Value":"E3HJ6URHQS31VD"},{"Name":"Region","Value":"Global"}]},"Period":300,"Stat":"Sum"},"ReturnData":true},
+            {"Id":"errors4","MetricStat":{"Metric":{"Namespace":"AWS/CloudFront","MetricName":"4xxErrorRate","Dimensions":[{"Name":"DistributionId","Value":"E3HJ6URHQS31VD"},{"Name":"Region","Value":"Global"}]},"Period":300,"Stat":"Average"},"ReturnData":true},
+            {"Id":"errors5","MetricStat":{"Metric":{"Namespace":"AWS/CloudFront","MetricName":"5xxErrorRate","Dimensions":[{"Name":"DistributionId","Value":"E3HJ6URHQS31VD"},{"Name":"Region","Value":"Global"}]},"Period":300,"Stat":"Average"},"ReturnData":true}
+          ]
+          JSON
+          aws cloudwatch get-metric-data \
+            --metric-data-queries file:///tmp/cf-diagnostic/queries-5m.json \
+            --start-time '2026-08-09T08:30:00Z' \
+            --end-time '2026-08-09T10:30:00Z' \
+            --scan-by TimestampAscending \
+            --output json > /tmp/cf-diagnostic/metrics-5m.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('/tmp/cf-diagnostic/metrics-5m.json')
+          data = json.loads(p.read_text())
+          series = {r['Id']: dict(zip(r.get('Timestamps', []), r.get('Values', []))) for r in data.get('MetricDataResults', [])}
+          timestamps = sorted(set().union(*(set(v) for v in series.values()))) if series else []
+          rows=[]
+          for ts in timestamps:
+              req=float(series.get('requests',{}).get(ts,0))
+              e4=float(series.get('errors4',{}).get(ts,0))
+              e5=float(series.get('errors5',{}).get(ts,0))
+              if req or e4 or e5:
+                  rows.append({'timestamp':ts,'requests':round(req),'4xx_pct':round(e4,3),'estimated_4xx':round(req*e4/100,2),'5xx_pct':round(e5,3)})
+          Path('/tmp/cf-diagnostic/derived-5m.json').write_text(json.dumps(rows, indent=2))
+          print(json.dumps(rows, indent=2))
+          PY
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## EdwardDClark.com CloudFront diagnostic'
+            echo
+            echo '### Logging'
+            echo '```json'
+            cat /tmp/cf-diagnostic/logging.json 2>/dev/null || echo '{"unavailable":true}'
+            echo '```'
+            echo
+            echo '### Five-minute reconstruction (08:30–10:30 UTC)'
+            echo '```json'
+            cat /tmp/cf-diagnostic/derived-5m.json 2>/dev/null || echo '[]'
+            echo '```'
+            echo
+            echo 'Read-only diagnostic; no logging or distribution settings were changed.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload diagnostic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudfront-error-window
+          path: /tmp/cf-diagnostic
+          retention-days: 1
+          if-no-files-found: warn
