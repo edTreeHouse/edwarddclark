@@ -85,6 +85,18 @@
   color: var(--muted);
 }
 
+.orcid-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
 @media (max-width: 58rem) {
   .about-hero {
     grid-template-columns: 1fr;
