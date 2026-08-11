@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Supplemental least-privilege permissions for the EdwardDClark.com GitHub website deployer
+
+Parameters:
+  WebsiteDeployerRoleName:
+    Type: String
+    Default: edwarddclark-github-production-deployer
+
+Resources:
+  WebsiteDeployerCloudFormationSupplement:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: EdwardDClarkWebsiteCloudFormationSupplement
+      Roles:
+        - !Ref WebsiteDeployerRoleName
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadWebsiteTemplateSummary
+            Effect: Allow
+            Action:
+              - cloudformation:GetTemplateSummary
+            Resource: arn:aws:cloudformation:us-east-1:049234776386:stack/edwarddclark-website/*
+
+Outputs:
+  RoleName:
+    Value: !Ref WebsiteDeployerRoleName
+  SupplementalPermission:
+    Value: cloudformation:GetTemplateSummary
