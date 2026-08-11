@@ -187,6 +187,61 @@
     }
   };
 
+  const initializeProfessionalCredentials = () => {
+    if (window.location.pathname !== '/current-work/' && window.location.pathname !== '/current-work/index.html') return;
+    const architectureTitle = document.getElementById('architecture-title');
+    const sectionCopy = architectureTitle?.closest('.section-copy');
+    const workStreams = sectionCopy?.querySelector('.work-streams');
+    if (!sectionCopy || !workStreams || sectionCopy.querySelector('.credential-block')) return;
+
+    const credentials = [
+      {
+        image: '/assets/aws-certified-solutions-architect-associate.webp',
+        alt: 'AWS Certified Solutions Architect Associate badge',
+        name: 'AWS Certified Solutions Architect – Associate'
+      },
+      {
+        image: '/assets/microsoft-certified-azure-solutions-architect-expert.webp',
+        alt: 'Microsoft Certified Azure Solutions Architect Expert badge',
+        name: 'Microsoft Certified: Azure Solutions Architect Expert'
+      },
+      {
+        image: '/assets/aws-certified-machine-learning-engineer-associate.webp',
+        alt: 'AWS Certified Machine Learning Engineer Associate badge',
+        name: 'AWS Certified Machine Learning Engineer – Associate'
+      }
+    ];
+
+    const block = document.createElement('div');
+    block.className = 'credential-block';
+    block.setAttribute('aria-labelledby', 'credentials-title');
+    block.innerHTML = `
+      <p class="work-label">Selected professional credentials</p>
+      <h3 id="credentials-title" class="credential-title">Cloud and machine learning certifications supporting current practice</h3>
+      <div class="credential-grid">
+        ${credentials.map(credential => `
+          <article class="credential-item">
+            <img src="${credential.image}" alt="${credential.alt}">
+            <p>${credential.name}</p>
+          </article>
+        `).join('')}
+      </div>
+    `;
+    workStreams.insertAdjacentElement('afterend', block);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .credential-block { margin-top: 2rem; padding-top: 1.75rem; border-top: 1px solid var(--line); }
+      .credential-title { margin: 0; max-width: 44rem; font-size: clamp(1.25rem, 2vw, 1.55rem); line-height: 1.25; }
+      .credential-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+      .credential-item { display: grid; grid-template-rows: 9rem auto; place-items: center; gap: 0.85rem; min-height: 13.5rem; padding: 1.15rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255,255,255,0.018); text-align: center; }
+      .credential-item img { display: block; width: auto; max-width: 8.5rem; height: 8.5rem; object-fit: contain; }
+      .credential-item p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+      @media (max-width: 52rem) { .credential-grid { grid-template-columns: 1fr; } .credential-item { grid-template-rows: 7.5rem auto; min-height: auto; } .credential-item img { max-width: 7rem; height: 7rem; } }
+    `;
+    document.head.appendChild(style);
+  };
+
   const initializeTelemetry = async () => {
     if (!EDC_HOSTS.has(window.location.hostname)) return;
     if (navigator.webdriver || privacyPreferenceEnabled()) return;
@@ -219,5 +274,6 @@
     }
   };
 
+  initializeProfessionalCredentials();
   initializeTelemetry();
 })();
