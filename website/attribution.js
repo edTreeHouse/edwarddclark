@@ -226,6 +226,7 @@
           </article>
         `).join('')}
       </div>
+      <p class="credential-verification"><a href="https://www.credly.com/users/ed-clark.d141b096" target="_blank" rel="noopener">View all verified credentials on Credly <span aria-hidden="true">↗</span></a></p>
     `;
     workStreams.insertAdjacentElement('afterend', block);
 
@@ -237,6 +238,9 @@
       .credential-item { display: grid; grid-template-rows: 9rem auto; place-items: center; gap: 0.85rem; min-height: 13.5rem; padding: 1.15rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255,255,255,0.018); text-align: center; }
       .credential-item img { display: block; width: auto; max-width: 8.5rem; height: 8.5rem; object-fit: contain; }
       .credential-item p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+      .credential-verification { margin: 1rem 0 0; }
+      .credential-verification a { color: var(--accent); font-size: 0.9rem; font-weight: 700; text-decoration: none; }
+      .credential-verification a:hover, .credential-verification a:focus-visible { text-decoration: underline; text-underline-offset: 0.2em; }
       @media (max-width: 52rem) { .credential-grid { grid-template-columns: 1fr; } .credential-item { grid-template-rows: 7.5rem auto; min-height: auto; } .credential-item img { max-width: 7rem; height: 7rem; } }
     `;
     document.head.appendChild(style);
