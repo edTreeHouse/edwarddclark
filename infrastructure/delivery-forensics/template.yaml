@@ -1,5 +1,35 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Privacy-preserving EdwardDClark.com CloudFront delivery forensics and synthetic health checks
+Description: Privacy-preserving EdwardDClark.com CloudFront delivery forensics, health alerts, and synthetic checks
+
+Parameters:
+  DistributionId:
+    Type: String
+    Default: E3HJ6URHQS31VD
+    Description: CloudFront distribution for edwarddclark.com.
+  AlertToEmail:
+    Type: String
+    Default: ed@collectivestateinference.org
+  AlertFromEmail:
+    Type: String
+    Default: notifications@collectivestateinference.org
+  ReplyToEmail:
+    Type: String
+    Default: ed@collectivestateinference.org
+  Health5xxThresholdPct:
+    Type: Number
+    Default: 1
+  Health4xxThresholdPct:
+    Type: Number
+    Default: 25
+  Health4xxMinRequests:
+    Type: Number
+    Default: 60
+  Health4xxMinErrors:
+    Type: Number
+    Default: 15
+  AlertCooldownSeconds:
+    Type: Number
+    Default: 21600
 
 Resources:
   DeliveryLogStream:
@@ -134,6 +164,211 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${DeliveryAnalyzerFunction}
       RetentionInDays: 7
 
+  DeliveryHealthAlertRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: edwarddclark-delivery-health-alert-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DeliveryHealthAlertReadAndNotify
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:GetMetricData
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:FilterLogEvents
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/edwarddclark-delivery-error-analyzer:*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/edwarddclark-delivery-health-alert:*
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                Resource: '*'
+
+  DeliveryHealthAlertFunction:
+    Type: AWS::Lambda::Function
+    DependsOn:
+      - DeliveryAnalyzerLogGroup
+      - DeliveryHealthAlertRole
+    Properties:
+      FunctionName: edwarddclark-delivery-health-alert
+      Runtime: python3.13
+      Handler: index.handler
+      Architectures: [arm64]
+      MemorySize: 192
+      Timeout: 30
+      Role: !GetAtt DeliveryHealthAlertRole.Arn
+      Environment:
+        Variables:
+          DISTRIBUTION_ID: !Ref DistributionId
+          ANALYZER_LOG_GROUP: !Ref DeliveryAnalyzerLogGroup
+          ALERT_LOG_GROUP: /aws/lambda/edwarddclark-delivery-health-alert
+          ALERT_TO_EMAIL: !Ref AlertToEmail
+          ALERT_FROM_EMAIL: !Ref AlertFromEmail
+          REPLY_TO_EMAIL: !Ref ReplyToEmail
+          HEALTH_5XX_THRESHOLD_PCT: !Ref Health5xxThresholdPct
+          HEALTH_4XX_THRESHOLD_PCT: !Ref Health4xxThresholdPct
+          HEALTH_4XX_MIN_REQUESTS: !Ref Health4xxMinRequests
+          HEALTH_4XX_MIN_ERRORS: !Ref Health4xxMinErrors
+          ALERT_COOLDOWN_SECONDS: !Ref AlertCooldownSeconds
+      Code:
+        ZipFile: |
+          import json, math, os, time
+          from collections import Counter
+          from datetime import datetime, timedelta, timezone
+          from html import escape
+          import boto3
+
+          cw=boto3.client('cloudwatch')
+          logs=boto3.client('logs')
+          ses=boto3.client('ses')
+          distribution=os.environ['DISTRIBUTION_ID']
+          analyzer_log=os.environ['ANALYZER_LOG_GROUP']
+          alert_log=os.environ['ALERT_LOG_GROUP']
+          to_email=os.environ['ALERT_TO_EMAIL']
+          from_email=os.environ['ALERT_FROM_EMAIL']
+          reply_to=os.environ['REPLY_TO_EMAIL']
+          threshold5=float(os.environ['HEALTH_5XX_THRESHOLD_PCT'])
+          threshold4=float(os.environ['HEALTH_4XX_THRESHOLD_PCT'])
+          min_requests=int(os.environ['HEALTH_4XX_MIN_REQUESTS'])
+          min_errors=float(os.environ['HEALTH_4XX_MIN_ERRORS'])
+          cooldown=int(os.environ['ALERT_COOLDOWN_SECONDS'])
+          scanner_tokens=(
+              '/wp-', 'wlwmanifest.xml', '/xmlrpc.php', '/.env', '/.git',
+              '/phpmyadmin', '/adminer', '/vendor/phpunit', '/cgi-bin/', '/wordpress/'
+          )
+
+          def metrics():
+              now=datetime.now(timezone.utc)
+              dims=[{'Name':'DistributionId','Value':distribution},{'Name':'Region','Value':'Global'}]
+              queries=[]
+              for ident,metric,stat in [('requests','Requests','Sum'),('errors4','4xxErrorRate','Average'),('errors5','5xxErrorRate','Average')]:
+                  queries.append({'Id':ident,'MetricStat':{'Metric':{'Namespace':'AWS/CloudFront','MetricName':metric,'Dimensions':dims},'Period':3600,'Stat':stat},'ReturnData':True})
+              result=cw.get_metric_data(MetricDataQueries=queries,StartTime=now-timedelta(hours=1),EndTime=now,ScanBy='TimestampAscending')
+              values={r['Id']:r.get('Values',[]) for r in result.get('MetricDataResults',[])}
+              r4=values.get('errors4',[]); r5=values.get('errors5',[])
+              return round(sum(values.get('requests',[]))), (sum(r4)/len(r4) if r4 else 0), (sum(r5)/len(r5) if r5 else 0)
+
+          def recent_marker():
+              try:
+                  result=logs.filter_log_events(logGroupName=alert_log,startTime=(int(time.time())-cooldown)*1000,filterPattern='"delivery_health_alert_sent"',limit=1)
+                  return bool(result.get('events'))
+              except logs.exceptions.ResourceNotFoundException:
+                  return False
+
+          def error_rows():
+              start=(int(time.time())-3600)*1000
+              rows=[]; token=None
+              while True:
+                  kwargs={'logGroupName':analyzer_log,'startTime':start,'filterPattern':'"edwarddclark_delivery_error"'}
+                  if token: kwargs['nextToken']=token
+                  result=logs.filter_log_events(**kwargs)
+                  for event in result.get('events',[]):
+                      try:
+                          row=json.loads(event.get('message',''))
+                      except (TypeError,json.JSONDecodeError):
+                          continue
+                      if row.get('kind')=='edwarddclark_delivery_error': rows.append(row)
+                  nxt=result.get('nextToken')
+                  if not nxt or nxt==token: break
+                  token=nxt
+              return rows
+
+          def scanner_path(path):
+              p=str(path or '').lower()
+              return any(token in p for token in scanner_tokens)
+
+          def handler(event,context):
+              requests,error4,error5=metrics()
+              estimated=requests*error4/100
+              problem=error5>=threshold5 or (requests>=min_requests and error4>=threshold4 and estimated>=min_errors)
+              if not problem: return {'alerted':False,'reason':'healthy'}
+              if recent_marker(): return {'alerted':False,'reason':'cooldown'}
+
+              rows=error_rows()
+              path_counts=Counter((int(r.get('status') or 0),str(r.get('path') or '/')) for r in rows)
+              four_rows=[r for r in rows if 400<=int(r.get('status') or 0)<500]
+              scanner_count=sum(1 for r in four_rows if scanner_path(r.get('path')))
+              scanner_share=(scanner_count/len(four_rows)) if four_rows else 0
+              if error5>=threshold5:
+                  classification='Potential delivery fault — 5xx threshold crossed'
+              elif len(four_rows)>=5 and scanner_share>=0.80:
+                  classification='Likely automated scanning / reconnaissance'
+              else:
+                  classification='Unclassified 4xx activity — review top paths'
+
+              top=path_counts.most_common(5)
+              top_text='\n'.join(f'- {status} {path}: {count}' for (status,path),count in top) or '- No forensic rows captured in the exact log window'
+              top_html=''.join(f'<li><code>{status} {escape(path)}</code>: {count}</li>' for (status,path),count in top) or '<li>No forensic rows captured in the exact log window</li>'
+              captured=len(rows)
+              note='Captured forensic count can differ from the CloudFront estimate because metric and log windows are evaluated independently.'
+              privacy='Privacy boundary: no client IP, cookie values, raw query strings, or full referrer URLs are persisted.'
+              text=(
+                  'EdwardDClark.com delivery-health alert\n\n'
+                  f'Assessment: {classification}\n'
+                  f'CloudFront requests (last hour): {requests}\n'
+                  f'4xx error rate: {error4:.3f}%\n'
+                  f'Estimated 4xx responses: {estimated:.1f}\n'
+                  f'5xx error rate: {error5:.3f}%\n'
+                  f'Captured forensic error events: {captured}\n'
+                  f'Likely scanner share of captured 4xx: {scanner_share*100:.1f}% ({scanner_count}/{len(four_rows)})\n\n'
+                  f'Top error paths:\n{top_text}\n\n{note}\n{privacy}'
+              )
+              html=(
+                  '<html><body><h2>Delivery-health alert</h2>'
+                  f'<p><strong>Assessment: {escape(classification)}</strong></p>'
+                  f'<p>CloudFront requests (last hour): {requests}<br>'
+                  f'4xx error rate: {error4:.3f}%<br>'
+                  f'Estimated 4xx responses: {estimated:.1f}<br>'
+                  f'5xx error rate: {error5:.3f}%<br>'
+                  f'Captured forensic error events: {captured}<br>'
+                  f'Likely scanner share of captured 4xx: {scanner_share*100:.1f}% ({scanner_count}/{len(four_rows)})</p>'
+                  f'<h3>Top error paths</h3><ul>{top_html}</ul>'
+                  f'<p><small>{escape(note)}<br>{escape(privacy)}</small></p></body></html>'
+              )
+              subject=f'EdwardDClark.com delivery-health alert — {classification}'
+              ses.send_email(Source=from_email,Destination={'ToAddresses':[to_email]},ReplyToAddresses=[reply_to],Message={'Subject':{'Data':subject[:200],'Charset':'UTF-8'},'Body':{'Text':{'Data':text,'Charset':'UTF-8'},'Html':{'Data':html,'Charset':'UTF-8'}}})
+              print(json.dumps({'kind':'delivery_health_alert_sent','classification':classification,'requests':requests,'error4':round(error4,3),'error5':round(error5,3),'captured':captured,'scanner_share':round(scanner_share,3)},separators=(',',':')))
+              return {'alerted':True,'classification':classification,'captured':captured}
+
+  DeliveryHealthAlertLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: DeliveryHealthAlertFunction
+    Properties:
+      LogGroupName: /aws/lambda/edwarddclark-delivery-health-alert
+      RetentionInDays: 14
+
+  DeliveryHealthAlertSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: edwarddclark-delivery-health-alert-schedule
+      Description: Evaluates delivery health hourly and enriches alerts with privacy-preserving forensic path evidence.
+      ScheduleExpression: cron(5 * * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt DeliveryHealthAlertFunction.Arn
+          Id: EdwardDClarkDeliveryHealthAlert
+
+  DeliveryHealthAlertPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DeliveryHealthAlertFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DeliveryHealthAlertSchedule.Arn
+
   SyntheticRole:
     Type: AWS::IAM::Role
     Properties:
@@ -224,6 +459,8 @@ Outputs:
     Value: !Ref DeliveryAnalyzerFunction
   DeliveryAnalyzerLogGroupName:
     Value: !Ref DeliveryAnalyzerLogGroup
+  DeliveryHealthAlertFunctionName:
+    Value: !Ref DeliveryHealthAlertFunction
   SyntheticFunctionName:
     Value: !Ref SyntheticFunction
   SyntheticMetricNamespace:
