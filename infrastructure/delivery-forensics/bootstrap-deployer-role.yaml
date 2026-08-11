@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: One-time bootstrap for the dedicated GitHub OIDC deployer used by EdwardDClark.com delivery forensics
+
+Parameters:
+  GitHubOidcProviderArn:
+    Type: String
+    Default: arn:aws:iam::049234776386:oidc-provider/token.actions.githubusercontent.com
+  GitHubSubject:
+    Type: String
+    Default: repo:edTreeHouse@29818303/edwarddclark@1325441951:environment:production
+
+Resources:
+  ForensicsDeployerRole:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      RoleName: edwarddclark-delivery-forensics-deployer
+      Description: Least-privilege GitHub OIDC role for EdwardDClark.com privacy-preserving delivery forensics
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: GitHubProductionEnvironmentOnly
+            Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOidcProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Ref GitHubSubject
+      Policies:
+        - PolicyName: EdwardDClarkForensicsDeployment
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: CloudFormationDeployment
+                Effect: Allow
+                Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:GetTemplate
+                  - cloudformation:GetTemplateSummary
+                  - cloudformation:UpdateStack
+                  - cloudformation:ValidateTemplate
+                Resource: '*'
+              - Sid: KinesisForensicsStream
+                Effect: Allow
+                Action:
+                  - kinesis:CreateStream
+                  - kinesis:DeleteStream
+                  - kinesis:DescribeStream
+                  - kinesis:DescribeStreamSummary
+                  - kinesis:ListShards
+                  - kinesis:IncreaseStreamRetentionPeriod
+                  - kinesis:DecreaseStreamRetentionPeriod
+                  - kinesis:AddTagsToStream
+                  - kinesis:RemoveTagsFromStream
+                  - kinesis:ListTagsForStream
+                  - kinesis:TagResource
+                  - kinesis:UntagResource
+                Resource: arn:aws:kinesis:us-east-1:049234776386:stream/edwarddclark-delivery-logs
+              - Sid: LambdaForensicsFunctions
+                Effect: Allow
+                Action:
+                  - lambda:CreateFunction
+                  - lambda:DeleteFunction
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                  - lambda:UpdateFunctionCode
+                  - lambda:UpdateFunctionConfiguration
+                  - lambda:TagResource
+                  - lambda:UntagResource
+                  - lambda:ListTags
+                  - lambda:AddPermission
+                  - lambda:RemovePermission
+                  - lambda:GetPolicy
+                Resource:
+                  - arn:aws:lambda:us-east-1:049234776386:function:edwarddclark-delivery-error-analyzer
+                  - arn:aws:lambda:us-east-1:049234776386:function:edwarddclark-synthetic-health
+              - Sid: LambdaEventSourceMappings
+                Effect: Allow
+                Action:
+                  - lambda:CreateEventSourceMapping
+                  - lambda:GetEventSourceMapping
+                  - lambda:UpdateEventSourceMapping
+                  - lambda:DeleteEventSourceMapping
+                Resource: '*'
+              - Sid: ForensicsLogGroups
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:DeleteLogGroup
+                  - logs:DescribeLogGroups
+                  - logs:PutRetentionPolicy
+                  - logs:DeleteRetentionPolicy
+                  - logs:TagResource
+                  - logs:UntagResource
+                Resource:
+                  - arn:aws:logs:us-east-1:049234776386:log-group:/aws/lambda/edwarddclark-delivery-error-analyzer*
+                  - arn:aws:logs:us-east-1:049234776386:log-group:/aws/lambda/edwarddclark-synthetic-health*
+              - Sid: SyntheticSchedule
+                Effect: Allow
+                Action:
+                  - events:PutRule
+                  - events:DeleteRule
+                  - events:DescribeRule
+                  - events:PutTargets
+                  - events:RemoveTargets
+                  - events:ListTargetsByRule
+                  - events:TagResource
+                  - events:UntagResource
+                Resource: arn:aws:events:us-east-1:049234776386:rule/edwarddclark-*
+              - Sid: RuntimeRoles
+                Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:ListAttachedRolePolicies
+                  - iam:ListRolePolicies
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:PassRole
+                Resource: arn:aws:iam::049234776386:role/edwarddclark-*
+              - Sid: RealtimeLogConfiguration
+                Effect: Allow
+                Action:
+                  - cloudfront:CreateRealtimeLogConfig
+                  - cloudfront:UpdateRealtimeLogConfig
+                  - cloudfront:DeleteRealtimeLogConfig
+                  - cloudfront:GetRealtimeLogConfig
+                  - cloudfront:ListRealtimeLogConfigs
+                Resource: '*'
+
+Outputs:
+  RoleArn:
+    Value: !GetAtt ForensicsDeployerRole.Arn
+  RoleName:
+    Value: !Ref ForensicsDeployerRole
