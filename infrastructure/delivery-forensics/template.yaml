@@ -1,0 +1,230 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Privacy-preserving EdwardDClark.com CloudFront delivery forensics and synthetic health checks
+
+Resources:
+  DeliveryLogStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: edwarddclark-delivery-logs
+      ShardCount: 1
+      RetentionPeriodHours: 24
+      Tags:
+        - Key: Application
+          Value: EdwardDClark.com delivery forensics
+        - Key: Privacy
+          Value: no-client-ip
+
+  CloudFrontRealtimeLogRole:
+    Type: AWS::IAM::Role
+    DependsOn: DeliveryLogStream
+    Properties:
+      RoleName: edwarddclark-cloudfront-realtime-logs-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: WriteRealtimeLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:PutRecord
+                  - kinesis:PutRecords
+                Resource: !GetAtt DeliveryLogStream.Arn
+
+  RealtimeLogConfig:
+    Type: AWS::CloudFront::RealtimeLogConfig
+    DependsOn: CloudFrontRealtimeLogRole
+    Properties:
+      Name: edwarddclark-privacy-delivery-forensics
+      SamplingRate: 100
+      Fields:
+        - timestamp
+        - sc-status
+        - cs-method
+        - cs-host
+        - cs-uri-stem
+        - cs-user-agent
+        - cs-referer
+        - x-edge-location
+      EndPoints:
+        - StreamType: Kinesis
+          KinesisStreamConfig:
+            RoleArn: !GetAtt CloudFrontRealtimeLogRole.Arn
+            StreamArn: !GetAtt DeliveryLogStream.Arn
+
+  DeliveryAnalyzerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: edwarddclark-delivery-analyzer-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole
+
+  DeliveryAnalyzerFunction:
+    Type: AWS::Lambda::Function
+    DependsOn:
+      - DeliveryLogStream
+      - DeliveryAnalyzerRole
+    Properties:
+      FunctionName: edwarddclark-delivery-error-analyzer
+      Runtime: python3.13
+      Handler: index.handler
+      Architectures: [arm64]
+      MemorySize: 128
+      Timeout: 15
+      Role: !GetAtt DeliveryAnalyzerRole.Arn
+      Code:
+        ZipFile: |
+          import base64, json
+          from urllib.parse import urlsplit
+          def path(v):
+              try: return urlsplit(v).path or '/'
+              except ValueError: return '/'
+          def refhost(v):
+              if not v or v == '-': return ''
+              try: return (urlsplit(v).hostname or '').lower()[:160]
+              except ValueError: return ''
+          def family(v):
+              s=v.lower()
+              for token,label in [('googlebot','Googlebot'),('bingbot','Bingbot'),('linkedinbot','LinkedInBot'),('bot','Bot'),('crawler','Crawler'),('spider','Spider'),('curl','curl'),('wget','wget'),('python','Python client'),('safari','Safari'),('chrome','Chrome'),('firefox','Firefox')]:
+                  if token in s: return label
+              return 'Other'
+          def handler(event, context):
+              n=0
+              for r in event.get('Records',[]):
+                  raw=base64.b64decode(r['kinesis']['data']).decode('utf-8','replace').rstrip('\n')
+                  p=raw.split('\t')
+                  if len(p) < 8: continue
+                  ts,status,method,host,uri,ua,ref,edge=p[:8]
+                  try: code=int(status)
+                  except ValueError: continue
+                  if code < 400: continue
+                  print(json.dumps({'kind':'edwarddclark_delivery_error','timestamp':ts,'status':code,'method':method[:12],'host':host[:160],'path':path(uri)[:500],'user_agent_family':family(ua),'referrer_host':refhost(ref),'edge_location':edge[:32]},separators=(',',':')))
+                  n+=1
+              return {'processed_errors':n}
+
+  DeliveryAnalyzerMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn: DeliveryAnalyzerFunction
+    Properties:
+      EventSourceArn: !GetAtt DeliveryLogStream.Arn
+      FunctionName: !Ref DeliveryAnalyzerFunction
+      StartingPosition: LATEST
+      BatchSize: 100
+      MaximumBatchingWindowInSeconds: 5
+      Enabled: true
+
+  DeliveryAnalyzerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: DeliveryAnalyzerFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DeliveryAnalyzerFunction}
+      RetentionInDays: 7
+
+  SyntheticRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: edwarddclark-synthetic-health-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: PublishSyntheticMetric
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: EdwardDClark/Synthetic
+
+  SyntheticFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: SyntheticRole
+    Properties:
+      FunctionName: edwarddclark-synthetic-health
+      Runtime: python3.13
+      Handler: index.handler
+      Architectures: [arm64]
+      MemorySize: 128
+      Timeout: 30
+      Role: !GetAtt SyntheticRole.Arn
+      Code:
+        ZipFile: |
+          import json, urllib.request, urllib.error, boto3
+          cw=boto3.client('cloudwatch')
+          base='https://edwarddclark.com'
+          targets=['/','/about/','/current-work/','/outputs/','/observatory/','/styles.css','/telemetry-config.json']
+          def check(p):
+              req=urllib.request.Request(base+p,headers={'User-Agent':'EdwardDClark-SyntheticHealth/1.0'})
+              try:
+                  with urllib.request.urlopen(req,timeout=8) as r: return int(r.status),''
+              except urllib.error.HTTPError as e: return int(e.code),str(e.reason)[:120]
+              except Exception as e: return 0,type(e).__name__
+          def handler(event,context):
+              rows=[]
+              for p in targets:
+                  s,e=check(p); rows.append({'path':p,'status':s,'error':e})
+              failures=sum(1 for x in rows if x['status'] != 200)
+              cw.put_metric_data(Namespace='EdwardDClark/Synthetic',MetricData=[{'MetricName':'FailedTargets','Value':failures,'Unit':'Count'},{'MetricName':'HealthyTargets','Value':len(rows)-failures,'Unit':'Count'}])
+              print(json.dumps({'kind':'edwarddclark_synthetic_health','failures':failures,'results':rows},separators=(',',':')))
+              return {'checked':len(rows),'failures':failures}
+
+  SyntheticLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: SyntheticFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${SyntheticFunction}
+      RetentionInDays: 14
+
+  SyntheticSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: edwarddclark-synthetic-health-schedule
+      Description: Checks canonical EdwardDClark.com pages and critical assets every 15 minutes.
+      ScheduleExpression: rate(15 minutes)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SyntheticFunction.Arn
+          Id: EdwardDClarkSyntheticHealth
+
+  SyntheticPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref SyntheticFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt SyntheticSchedule.Arn
+
+Outputs:
+  RealtimeLogConfigArn:
+    Value: !Ref RealtimeLogConfig
+  DeliveryAnalyzerFunctionName:
+    Value: !Ref DeliveryAnalyzerFunction
+  DeliveryAnalyzerLogGroupName:
+    Value: !Ref DeliveryAnalyzerLogGroup
+  SyntheticFunctionName:
+    Value: !Ref SyntheticFunction
+  SyntheticMetricNamespace:
+    Value: EdwardDClark/Synthetic

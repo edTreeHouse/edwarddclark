@@ -1,0 +1,87 @@
+name: Deploy delivery forensics stack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - infrastructure/delivery-forensics/template.yaml
+      - .github/workflows/deploy-delivery-forensics-stack.yml
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: edwarddclark-delivery-forensics-production
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: "049234776386"
+  STACK_NAME: edwarddclark-delivery-forensics-production
+  STREAM_NAME: edwarddclark-delivery-logs
+  FORENSICS_DEPLOY_ROLE_ARN: arn:aws:iam::049234776386:role/edwarddclark-delivery-forensics-deployer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ env.FORENSICS_DEPLOY_ROLE_ARN }}
+          role-session-name: edward-delivery-forensics-${{ github.run_id }}
+          role-duration-seconds: 1200
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+
+      - name: Validate template
+        run: aws cloudformation validate-template --template-body file://infrastructure/delivery-forensics/template.yaml >/dev/null
+
+      - name: Deploy forensics stack
+        run: |
+          set -euo pipefail
+          aws cloudformation deploy \
+            --stack-name "$STACK_NAME" \
+            --template-file infrastructure/delivery-forensics/template.yaml \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset
+
+      - name: Report CloudFormation failure events
+        if: failure()
+        run: |
+          aws cloudformation describe-stack-events \
+            --stack-name "$STACK_NAME" \
+            --query "StackEvents[?contains(ResourceStatus, 'FAILED') || contains(ResourceStatus, 'ROLLBACK')].[Timestamp,LogicalResourceId,ResourceType,ResourceStatus,ResourceStatusReason]" \
+            --output table || true
+
+      - name: Verify privacy boundary and outputs
+        run: |
+          set -euo pipefail
+          ARN=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?OutputKey=='RealtimeLogConfigArn'].OutputValue | [0]" --output text)
+          test -n "$ARN" && test "$ARN" != "None"
+          aws cloudfront get-realtime-log-config --name edwarddclark-privacy-delivery-forensics > /tmp/realtime.json
+          jq -e '.RealtimeLogConfig.Fields | index("c-ip") == null and index("x-forwarded-for") == null and index("cs-cookie") == null' /tmp/realtime.json >/dev/null
+          jq -e '.RealtimeLogConfig.SamplingRate == 100' /tmp/realtime.json >/dev/null
+          test "$(aws kinesis describe-stream-summary --stream-name "$STREAM_NAME" --query 'StreamDescriptionSummary.RetentionPeriodHours' --output text)" = "24"
+
+      - name: Report
+        run: |
+          {
+            echo '## EdwardDClark.com delivery forensics'
+            echo
+            echo '- Repository owner: edTreeHouse/edwarddclark'
+            echo '- CloudFront real-time logging: provisioned'
+            echo '- Client IP and cookie fields: excluded'
+            echo '- URI and referrer values: sanitized before persistent logging'
+            echo '- Kinesis retention: 24 hours'
+            echo '- Error-only sanitized CloudWatch retention: 7 days'
+            echo '- Synthetic checks: every 15 minutes'
+          } >> "$GITHUB_STEP_SUMMARY"
