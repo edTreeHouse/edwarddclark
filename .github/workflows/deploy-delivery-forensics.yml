@@ -1,0 +1,84 @@
+name: Deploy delivery forensics attachment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - infrastructure/template.yaml
+      - .github/workflows/deploy-delivery-forensics.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: edwarddclark-delivery-forensics-attachment
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  STACK_NAME: edwarddclark-website
+  FORENSICS_STACK: edwarddclark-delivery-forensics
+  DOMAIN_NAME: edwarddclark.com
+  HOSTED_ZONE_ID: Z0974116K34TIFVG51RG
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Read privacy-forensics configuration
+        id: forensics
+        run: |
+          set -euo pipefail
+          ARN=$(aws cloudformation describe-stacks \
+            --stack-name "$FORENSICS_STACK" \
+            --query "Stacks[0].Outputs[?OutputKey=='RealtimeLogConfigArn'].OutputValue | [0]" \
+            --output text)
+          test -n "$ARN" && test "$ARN" != "None"
+          echo "arn=$ARN" >> "$GITHUB_OUTPUT"
+
+      - name: Validate website template
+        run: aws cloudformation validate-template --template-body file://infrastructure/template.yaml >/dev/null
+
+      - name: Attach real-time diagnostics
+        run: |
+          set -euo pipefail
+          aws cloudformation deploy \
+            --stack-name "$STACK_NAME" \
+            --template-file infrastructure/template.yaml \
+            --parameter-overrides \
+              DomainName="$DOMAIN_NAME" \
+              HostedZoneId="$HOSTED_ZONE_ID" \
+              GitHubRepository="${{ github.repository }}" \
+              GitHubBranch="main" \
+              RealtimeLogConfigArn="${{ steps.forensics.outputs.arn }}" \
+            --no-fail-on-empty-changeset
+
+      - name: Verify CloudFront attachment and privacy boundary
+        run: |
+          set -euo pipefail
+          DISTRIBUTION=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue | [0]" --output text)
+          ATTACHED=$(aws cloudfront get-distribution-config --id "$DISTRIBUTION" --query 'DistributionConfig.DefaultCacheBehavior.RealtimeLogConfigArn' --output text)
+          test "$ATTACHED" = "${{ steps.forensics.outputs.arn }}"
+          aws cloudfront get-realtime-log-config --arn "$ATTACHED" > /tmp/realtime.json
+          jq -e '.RealtimeLogConfig.Fields | index("c-ip") == null and index("x-forwarded-for") == null and index("cs-cookie") == null' /tmp/realtime.json >/dev/null
+
+      - name: Smoke test canonical pages
+        run: |
+          set -euo pipefail
+          for path in / /about/ /current-work/ /outputs/ /observatory/; do
+            curl --fail --silent --show-error --location --retry 4 --retry-delay 2 "https://${DOMAIN_NAME}${path}" >/dev/null
+          done
