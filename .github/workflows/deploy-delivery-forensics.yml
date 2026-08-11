@@ -19,7 +19,7 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   STACK_NAME: edwarddclark-website
-  FORENSICS_STACK: edwarddclark-delivery-forensics
+  FORENSICS_STACK: edwarddclark-delivery-forensics-v2
   DOMAIN_NAME: edwarddclark.com
   HOSTED_ZONE_ID: Z0974116K34TIFVG51RG
 
