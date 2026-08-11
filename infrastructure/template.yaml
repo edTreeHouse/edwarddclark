@@ -14,6 +14,13 @@ Parameters:
   GitHubBranch:
     Type: String
     Default: main
+  RealtimeLogConfigArn:
+    Type: String
+    Default: ''
+    Description: Optional privacy-preserving CloudFront real-time log configuration ARN.
+
+Conditions:
+  HasRealtimeLogConfig: !Not [!Equals [!Ref RealtimeLogConfigArn, '']]
 
 Resources:
   WebsiteBucket:
@@ -112,6 +119,7 @@ Resources:
           AllowedMethods: [GET, HEAD, OPTIONS]
           CachedMethods: [GET, HEAD, OPTIONS]
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          RealtimeLogConfigArn: !If [HasRealtimeLogConfig, !Ref RealtimeLogConfigArn, !Ref 'AWS::NoValue']
           FunctionAssociations:
             - EventType: viewer-request
               FunctionARN: !GetAtt CanonicalHostFunction.FunctionARN
@@ -195,3 +203,5 @@ Outputs:
     Value: !GetAtt WebsiteDistribution.DomainName
   WebsiteUrl:
     Value: !Sub 'https://${DomainName}'
+  RealtimeLoggingEnabled:
+    Value: !If [HasRealtimeLogConfig, 'true', 'false']
