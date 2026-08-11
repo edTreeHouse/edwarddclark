@@ -150,6 +150,14 @@ jobs:
           set -euo pipefail
 
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/" --output /tmp/index.html
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/favicon.svg" --output /tmp/favicon.svg
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/favicon-96x96.png" --output /tmp/favicon-96x96.png
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
+            "https://${DOMAIN_NAME}/favicon.ico" --output /tmp/favicon.ico
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
             "https://${DOMAIN_NAME}/current-work/" --output /tmp/current-work.html
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
             "https://${DOMAIN_NAME}/current-work/current-work.css" --output /tmp/current-work.css
@@ -169,6 +177,14 @@ jobs:
             "https://${DOMAIN_NAME}/observatory/config.js" --output /tmp/observatory-config.js
           curl --fail --silent --show-error --location --retry 5 --retry-delay 2 --retry-all-errors \
             "https://${DOMAIN_NAME}/observatory/app.js" --output /tmp/observatory-app.js
+
+          cmp website/index.html /tmp/index.html
+          cmp website/favicon.svg /tmp/favicon.svg
+          cmp website/favicon-96x96.png /tmp/favicon-96x96.png
+          cmp website/favicon.ico /tmp/favicon.ico
+          grep -Fq 'href="/favicon.svg" type="image/svg+xml" sizes="any"' /tmp/index.html
+          grep -Fq 'href="/favicon-96x96.png" type="image/png" sizes="96x96"' /tmp/index.html
+          grep -Fq 'href="/favicon.ico"' /tmp/index.html
 
           cmp website/current-work/index.html /tmp/current-work.html
           cmp website/current-work/current-work.css /tmp/current-work.css
