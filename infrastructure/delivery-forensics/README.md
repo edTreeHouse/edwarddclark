@@ -8,7 +8,7 @@ The CloudFront real-time log configuration intentionally excludes `c-ip`, `x-for
 
 ## Repository boundary
 
-EdwardDClark.com delivery-forensics infrastructure is owned and deployed from `edTreeHouse/edwarddclark`. The CSI website repository is not part of the steady-state deployment path.
+EdwardDClark.com delivery-forensics infrastructure is owned and deployed from `edTreeHouse/edwarddclark`. The CSI website repository is not part of the steady-state deployment path. Repository ownership is considered complete only after the bootstrap trust handoff and a successful EdwardDClark-owned stack deployment.
 
 The dedicated deployment identity is:
 
