@@ -8,3 +8,175 @@
     transform-origin: center center;
   }
 }
+
+/* First-session introduction: one practice formed through three disciplines. */
+.identity-orb {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, 39rem);
+  height: auto;
+  overflow: visible;
+  opacity: 0.98;
+  filter: drop-shadow(0 1.5rem 4rem rgba(0, 0, 0, 0.2));
+}
+
+.identity-sequence {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.identity-role,
+.identity-name,
+.identity-practice {
+  position: absolute;
+  color: var(--text);
+  font-weight: 760;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.94);
+  opacity: 0;
+}
+
+.identity-role {
+  padding: 0.38rem 0.62rem;
+  border: 1px solid rgba(97, 219, 200, 0.32);
+  border-radius: 999px;
+  background: rgba(7, 21, 33, 0.68);
+  color: #d9fff7;
+  font-size: clamp(0.68rem, 1vw, 0.8rem);
+  backdrop-filter: blur(8px);
+}
+
+.identity-researcher { top: 18%; left: 7%; }
+.identity-architect { top: 43%; right: -2%; }
+.identity-entrepreneur { bottom: 18%; left: 9%; }
+
+.identity-name {
+  top: 48%;
+  left: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(1.05rem, 2vw, 1.5rem);
+  transform: translate(-50%, -50%);
+}
+
+.identity-practice {
+  left: 50%;
+  bottom: 7%;
+  width: 100%;
+  color: var(--accent);
+  font-size: clamp(0.66rem, 0.95vw, 0.78rem);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.edc-orb-intro .identity-sequence { display: block; }
+.edc-orb-intro .hero-copy { animation: edc-copy-reveal 4.2s cubic-bezier(0.2, 0.72, 0.22, 1) both; }
+.edc-orb-intro .orb-field { animation: edc-field-form 1.35s ease-out both; }
+.edc-orb-intro .orb-orbits { animation: edc-orbits-form 1.8s ease-out both; }
+.edc-orb-intro .orb-links path {
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: edc-links-form 1.85s 0.2s ease-out both;
+}
+.edc-orb-intro .orb-stars,
+.edc-orb-intro .orb-nodes,
+.edc-orb-intro .orb-anchor-nodes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: edc-nodes-form 1.2s 0.45s ease-out both;
+}
+.edc-orb-intro .orb-cores {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: edc-core-form 2.2s 0.8s ease-out both;
+}
+.edc-orb-intro .identity-researcher { animation: edc-role-one 4.05s ease both; }
+.edc-orb-intro .identity-architect { animation: edc-role-two 4.05s ease both; }
+.edc-orb-intro .identity-entrepreneur { animation: edc-role-three 4.05s ease both; }
+.edc-orb-intro .identity-name { animation: edc-name-reveal 4.05s ease both; }
+.edc-orb-intro .identity-practice { animation: edc-practice-reveal 4.05s ease both; }
+
+@keyframes edc-field-form {
+  0% { opacity: 0; transform: scale(0.86); transform-origin: center; }
+  100% { opacity: 1; transform: scale(1); transform-origin: center; }
+}
+
+@keyframes edc-orbits-form {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes edc-links-form {
+  0% { stroke-dashoffset: 3000; opacity: 0; }
+  12% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes edc-nodes-form {
+  0% { opacity: 0; transform: scale(0.35); }
+  70% { opacity: 1; transform: scale(1.14); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes edc-core-form {
+  0% { opacity: 0; transform: scale(0.4); }
+  55% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes edc-role-one {
+  0%, 17% { opacity: 0; transform: translateY(0.5rem); }
+  25%, 42% { opacity: 1; transform: translateY(0); }
+  51%, 100% { opacity: 0; transform: translateY(-0.35rem); }
+}
+
+@keyframes edc-role-two {
+  0%, 32% { opacity: 0; transform: translateY(0.5rem); }
+  40%, 56% { opacity: 1; transform: translateY(0); }
+  65%, 100% { opacity: 0; transform: translateY(-0.35rem); }
+}
+
+@keyframes edc-role-three {
+  0%, 47% { opacity: 0; transform: translateY(0.5rem); }
+  55%, 70% { opacity: 1; transform: translateY(0); }
+  78%, 100% { opacity: 0; transform: translateY(-0.35rem); }
+}
+
+@keyframes edc-name-reveal {
+  0%, 66% { opacity: 0; transform: translate(-50%, calc(-50% + 0.55rem)); }
+  74%, 88% { opacity: 1; transform: translate(-50%, -50%); }
+  96%, 100% { opacity: 0; transform: translate(-50%, calc(-50% - 0.35rem)); }
+}
+
+@keyframes edc-practice-reveal {
+  0%, 72% { opacity: 0; transform: translate(-50%, 0.45rem); }
+  80%, 91% { opacity: 0.94; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -0.25rem); }
+}
+
+@keyframes edc-copy-reveal {
+  0%, 70% { opacity: 0; transform: translateY(1rem); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 64rem) {
+  .identity-role { font-size: 0.66rem; }
+  .identity-researcher { top: 15%; left: 4%; }
+  .identity-architect { top: 43%; right: 0; }
+  .identity-entrepreneur { bottom: 15%; left: 5%; }
+  .identity-practice { bottom: 4%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity-sequence { display: none !important; }
+  .hero-copy,
+  .identity-orb,
+  .identity-orb * {
+    animation: none !important;
+  }
+}
