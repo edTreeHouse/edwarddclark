@@ -1,0 +1,243 @@
+.ideas-hero {
+  max-width: 58rem;
+}
+
+.ideas-hero h1 {
+  max-width: 12ch;
+}
+
+.essay-list {
+  display: grid;
+  gap: 2rem;
+}
+
+.essay-card {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(97, 219, 200, 0.055), rgba(255, 255, 255, 0.02));
+}
+
+.essay-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.85rem;
+}
+
+.essay-card-meta,
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.essay-card h2 {
+  max-width: 18ch;
+  margin: 1rem 0;
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-weight: 620;
+  letter-spacing: -0.045em;
+  line-height: 1.03;
+}
+
+.essay-card h2 a {
+  text-decoration: none;
+}
+
+.essay-card h2 a:hover,
+.essay-card h2 a:focus-visible {
+  color: var(--accent);
+}
+
+.essay-card-copy > p {
+  max-width: 38rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.article-hero {
+  padding: clamp(5.5rem, 10vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+}
+
+.article-header-copy {
+  max-width: 64rem;
+}
+
+.article-hero h1 {
+  max-width: 15ch;
+  margin: 1.1rem 0 0;
+  font-size: clamp(3.2rem, 7.1vw, 6.7rem);
+  font-weight: 630;
+  letter-spacing: -0.06em;
+  line-height: 0.96;
+}
+
+.article-deck {
+  max-width: 44rem;
+  margin: 1.8rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+  line-height: 1.45;
+}
+
+.article-meta {
+  margin-top: 2rem;
+}
+
+.article-meta strong {
+  color: var(--text);
+  font-weight: 680;
+}
+
+.article-hero-figure {
+  margin: clamp(3rem, 7vw, 5rem) 0 0;
+}
+
+.article-hero-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: clamp(1rem, 2.5vw, 1.6rem);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.28);
+}
+
+.article-shell {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.45fr) minmax(0, 2fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  padding: clamp(4rem, 8vw, 7rem) 0;
+  border-top: 1px solid var(--line);
+}
+
+.article-rail {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.article-rail p {
+  margin: 0 0 0.55rem;
+}
+
+.article-rail a {
+  color: var(--accent);
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.article-rail a:hover,
+.article-rail a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.22rem;
+}
+
+.article-body {
+  max-width: 48rem;
+}
+
+.article-body p {
+  margin: 0 0 1.45rem;
+  color: rgba(235, 241, 244, 0.9);
+  font-size: clamp(1.08rem, 1.55vw, 1.22rem);
+  line-height: 1.78;
+}
+
+.article-body .article-lead {
+  color: var(--text);
+  font-size: clamp(1.3rem, 2.15vw, 1.65rem);
+  line-height: 1.58;
+}
+
+.article-body h2 {
+  max-width: 20ch;
+  margin: clamp(3.5rem, 7vw, 5.5rem) 0 1.35rem;
+  color: var(--text);
+  font-size: clamp(2rem, 4.2vw, 3.35rem);
+  font-weight: 620;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.article-body h2:first-of-type {
+  margin-top: 4rem;
+}
+
+.article-body em {
+  color: var(--text);
+}
+
+.article-end {
+  margin-top: clamp(4rem, 8vw, 6rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: linear-gradient(145deg, rgba(97, 219, 200, 0.065), rgba(255, 255, 255, 0.02));
+}
+
+.article-end h2 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+}
+
+.article-end p {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.article-end .section-kicker {
+  color: var(--accent);
+  font-size: 0.78rem;
+}
+
+.article-end .actions {
+  margin-top: 1.6rem;
+}
+
+@media (max-width: 52rem) {
+  .essay-card,
+  .article-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .article-shell {
+    gap: 2.4rem;
+  }
+
+  .article-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .article-rail p {
+    margin: 0;
+  }
+}
+
+@media (max-width: 40rem) {
+  .article-hero h1 {
+    font-size: clamp(3rem, 14.5vw, 4.7rem);
+  }
+
+  .essay-card {
+    padding: 0.8rem;
+  }
+
+  .essay-card-copy {
+    padding: 0.4rem 0.4rem 0.8rem;
+  }
+}
