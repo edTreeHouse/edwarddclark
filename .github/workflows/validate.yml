@@ -38,6 +38,10 @@ jobs:
           test -s website/observatory/styles.css
           test -s website/observatory/app.js
           test -s website/observatory/config.js
+          test -s website/ideas/index.html
+          test -s website/ideas/ideas.css
+          test -s website/ideas/what-if-ai-could-understand-the-musical-moment/index.html
+          test -s website/assets/ask-vibe-shared-musical-moment.jpg
           test -s infrastructure/template.yaml
 
           if find website -type l -print -quit | grep -q .; then
@@ -52,7 +56,9 @@ jobs:
             website/about/index.html \
             website/research/index.html \
             website/outputs/index.html \
-            website/current-work/index.html; do
+            website/current-work/index.html \
+            website/ideas/index.html \
+            website/ideas/what-if-ai-could-understand-the-musical-moment/index.html; do
             grep -Fq '<script src="/attribution.js" defer></script>' "$file" || {
               echo "Attribution script is not loaded by $file" >&2
               exit 1
