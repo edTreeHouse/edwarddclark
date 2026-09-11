@@ -131,7 +131,7 @@ Contact routes should be purpose-specific:
 - Media
 - Professional inquiry
 
-### Ideas — later phase
+### Ideas
 
 A curated public research notebook for concise conceptual notes, hypotheses, and methodological observations. This is not a chronological blog and should not dilute formal scholarly outputs.
 
@@ -140,7 +140,7 @@ A curated public research notebook for concise conceptual notes, hypotheses, and
 ### Primary navigation
 
 ```text
-Home | About | Research | Publications | Current Work
+Home | About | Research | Publications | Ideas | Current Work
 ```
 
 ### Secondary navigation

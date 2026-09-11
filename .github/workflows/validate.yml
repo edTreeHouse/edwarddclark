@@ -65,6 +65,24 @@ jobs:
             }
           done
 
+          for file in \
+            website/index.html \
+            website/about/index.html \
+            website/research/index.html \
+            website/outputs/index.html \
+            website/current-work/index.html \
+            website/ideas/index.html \
+            website/ideas/what-if-ai-could-understand-the-musical-moment/index.html; do
+            grep -Fq 'href="/ideas/"' "$file" || {
+              echo "Ideas is missing from the primary navigation in $file" >&2
+              exit 1
+            }
+          done
+
+          grep -Fq '<a href="/ideas/" aria-current="page">Ideas</a>' website/ideas/index.html
+          grep -Fq '<a href="/ideas/" aria-current="page">Ideas</a>' \
+            website/ideas/what-if-ai-could-understand-the-musical-moment/index.html
+
           grep -Fq "utm_source" website/attribution.js
           grep -Fq "via', 'edwarddclark.com'" website/attribution.js
           grep -Fq "navigator.globalPrivacyControl" website/attribution.js
