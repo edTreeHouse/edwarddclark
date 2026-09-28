@@ -14,8 +14,14 @@
 .article-deck { max-width: 44rem; margin: 1.8rem 0 0; color: var(--muted); font-size: clamp(1.25rem, 2.3vw, 1.65rem); line-height: 1.45; }
 .article-meta { margin-top: 2rem; }
 .article-meta strong { color: var(--text); font-weight: 680; }
-.article-hero-figure { margin: clamp(3rem, 7vw, 5rem) 0 0; }
-.article-hero-figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--line); border-radius: clamp(1rem, 2.5vw, 1.6rem); box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.28); }
+.article-hero--shareplay { position: relative; isolation: isolate; display: flex; min-height: clamp(34rem, 64vw, 48rem); align-items: flex-end; overflow: hidden; padding: clamp(8rem, 15vw, 12rem) 0 clamp(3.5rem, 8vw, 6rem); background-image: url('/assets/shareplay-aware-social-music-hero.png'); background-position: center 42%; background-size: cover; border-bottom: 1px solid var(--line); }
+.article-hero--shareplay::before { position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(4, 13, 23, 0.94) 0%, rgba(4, 13, 23, 0.78) 42%, rgba(4, 13, 23, 0.28) 100%), linear-gradient(0deg, rgba(4, 13, 23, 0.92) 0%, rgba(4, 13, 23, 0.18) 72%, rgba(4, 13, 23, 0.38) 100%); content: ''; pointer-events: none; }
+.article-hero--shareplay .article-header-copy { position: relative; z-index: 1; }
+.article-hero--shareplay .eyebrow { color: var(--accent); }
+.article-hero--shareplay h1 { text-wrap: balance; text-shadow: 0 0.15rem 1.5rem rgba(0, 0, 0, 0.28); }
+.article-hero--shareplay .article-deck { color: rgba(245, 249, 250, 0.9); text-shadow: 0 0.1rem 1rem rgba(0, 0, 0, 0.28); }
+.article-hero--shareplay .article-meta { color: rgba(235, 241, 244, 0.86); }
+.article-hero--shareplay .article-meta strong { color: var(--text); }
 .article-shell { display: grid; grid-template-columns: minmax(9rem, 0.45fr) minmax(0, 2fr); gap: clamp(2rem, 7vw, 7rem); padding: clamp(4rem, 8vw, 7rem) 0; border-top: 1px solid var(--line); }
 .article-rail { color: var(--muted); font-size: 0.82rem; }
 .article-rail p { margin: 0 0 0.55rem; }
@@ -42,4 +48,4 @@
 .article-end .section-kicker { color: var(--accent); font-size: 0.78rem; }
 .article-end .actions { margin-top: 1.6rem; }
 @media (max-width: 52rem) { .essay-card, .article-shell { grid-template-columns: 1fr; } .article-shell { gap: 2.4rem; } .article-rail { display: flex; flex-wrap: wrap; gap: 0.45rem 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); } .article-rail p { margin: 0; } }
-@media (max-width: 40rem) { .article-hero h1 { font-size: clamp(3rem, 14.5vw, 4.7rem); } .essay-card { padding: 0.8rem; } .essay-card-copy { padding: 0.4rem 0.4rem 0.8rem; } .protocol-grid { grid-template-columns: 1fr; } .architecture-layer { grid-template-columns: 2rem 1fr; padding: 0.72rem 0.8rem; } }
+@media (max-width: 40rem) { .article-hero h1 { font-size: clamp(3rem, 14.5vw, 4.7rem); } .article-hero--shareplay { min-height: 38rem; padding-top: 7rem; padding-bottom: 3rem; background-position: center center; } .article-hero--shareplay::before { background: linear-gradient(90deg, rgba(4, 13, 23, 0.93) 0%, rgba(4, 13, 23, 0.58) 100%), linear-gradient(0deg, rgba(4, 13, 23, 0.94) 0%, rgba(4, 13, 23, 0.2) 75%, rgba(4, 13, 23, 0.38) 100%); } .essay-card { padding: 0.8rem; } .essay-card-copy { padding: 0.4rem 0.4rem 0.8rem; } .protocol-grid { grid-template-columns: 1fr; } .architecture-layer { grid-template-columns: 2rem 1fr; padding: 0.72rem 0.8rem; } }
