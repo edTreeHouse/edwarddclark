@@ -191,7 +191,7 @@
   display: block;
   min-width: 0;
   width: min(65%, 660px);
-  justify-self: end;
+  justify-self: start;
 }
 
 .ideas-feature-art img {
@@ -214,7 +214,7 @@
   .ideas-feature-art {
     width: min(78%, 42rem);
     max-width: 42rem;
-    justify-self: end;
+    justify-self: start;
   }
 }
 
