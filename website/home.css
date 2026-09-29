@@ -180,3 +180,37 @@
     animation: none !important;
   }
 }
+
+.ideas-feature-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.82fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+}
+
+.ideas-feature-art {
+  display: block;
+  min-width: 0;
+}
+
+.ideas-feature-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 52rem) {
+  .ideas-feature-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .ideas-feature-art {
+    max-width: 42rem;
+  }
+}
