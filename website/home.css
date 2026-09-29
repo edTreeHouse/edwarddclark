@@ -183,14 +183,15 @@
 
 .ideas-feature-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.82fr);
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 .ideas-feature-art {
   display: block;
   min-width: 0;
+  width: min(65%, 660px);
+  justify-self: end;
 }
 
 .ideas-feature-art img {
@@ -211,6 +212,15 @@
   }
 
   .ideas-feature-art {
+    width: min(78%, 42rem);
     max-width: 42rem;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 40rem) {
+  .ideas-feature-art {
+    width: 100%;
+    justify-self: stretch;
   }
 }
