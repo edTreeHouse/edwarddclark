@@ -469,6 +469,15 @@ footer p { margin: 0; }
 }
 
 @media (max-width: 52rem) {
+  .site-header {
+    align-items: flex-start;
+  }
+
+  .site-header nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .hero {
     min-height: auto;
     padding-top: clamp(4.5rem, 10vw, 6rem);
