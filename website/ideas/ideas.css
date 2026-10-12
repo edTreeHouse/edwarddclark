@@ -12,6 +12,8 @@
 .article-hero { padding: clamp(5.5rem, 10vw, 8rem) 0 clamp(3rem, 6vw, 5rem); }
 .article-hero--aws-builder .article-hero-figure { margin: clamp(1.4rem, 3vw, 2.25rem) auto 0; max-width: 1180px; }
 .article-hero--aws-builder .article-hero-figure img { display: block; width: 100%; height: auto; max-height: 620px; object-fit: cover; border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 22px; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28); }
+.article-hero--digital-transformation .article-hero-figure { margin: clamp(1.4rem, 3vw, 2.25rem) auto 0; max-width: 1180px; }
+.article-hero--digital-transformation .article-hero-figure img { display: block; width: 100%; height: auto; max-height: 620px; object-fit: cover; border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 22px; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28); }
 .article-header-copy { max-width: 64rem; }
 .article-hero h1 { max-width: 15ch; margin: 1.1rem 0 0; font-size: clamp(3.2rem, 7.1vw, 6.7rem); font-weight: 630; letter-spacing: -0.06em; line-height: 0.96; }
 .article-deck { max-width: 44rem; margin: 1.8rem 0 0; color: var(--muted); font-size: clamp(1.25rem, 2.3vw, 1.65rem); line-height: 1.45; }
@@ -52,3 +54,18 @@
 .article-end .actions { margin-top: 1.6rem; }
 @media (max-width: 52rem) { .essay-card, .article-shell { grid-template-columns: 1fr; } .article-shell { gap: 2.4rem; } .article-rail { display: flex; flex-wrap: wrap; gap: 0.45rem 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); } .article-rail p { margin: 0; } }
 @media (max-width: 40rem) { .article-hero h1 { font-size: clamp(3rem, 14.5vw, 4.7rem); } .article-hero--shareplay { min-height: 38rem; padding-top: 7rem; padding-bottom: 3rem; background-position: center center; } .article-hero--shareplay::before { background: linear-gradient(90deg, rgba(4, 13, 23, 0.93) 0%, rgba(4, 13, 23, 0.58) 100%), linear-gradient(0deg, rgba(4, 13, 23, 0.94) 0%, rgba(4, 13, 23, 0.2) 75%, rgba(4, 13, 23, 0.38) 100%); } .ideas-hero { min-height: 34rem; padding: 6rem 1.25rem 4rem; background-position: 73% center; background-image: linear-gradient(90deg, rgba(7, 21, 33, 0.96) 0%, rgba(7, 21, 33, 0.82) 48%, rgba(7, 21, 33, 0.34) 100%), linear-gradient(0deg, rgba(7, 21, 33, 0.64) 0%, rgba(7, 21, 33, 0.12) 74%, rgba(7, 21, 33, 0.24) 100%), url('/assets/ideas-hero-lightbulbs.jpg'); } .essay-card { padding: 0.8rem; } .essay-card-copy { padding: 0.4rem 0.4rem 0.8rem; } .protocol-grid { grid-template-columns: 1fr; } .architecture-layer { grid-template-columns: 2rem 1fr; padding: 0.72rem 0.8rem; } }
+
+.publication-groups { display: grid; gap: 1.25rem; }
+.publication-category { border: 1px solid var(--line); border-radius: 1.25rem; background: linear-gradient(145deg, rgba(97, 219, 200, 0.055), rgba(255, 255, 255, 0.02)); }
+.publication-category > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.35rem; color: var(--text); cursor: pointer; font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 680; list-style: none; }
+.publication-category > summary::-webkit-details-marker { display: none; }
+.publication-category > summary::before { flex: 0 0 1.2rem; color: var(--accent); content: '+'; font-size: 1.5rem; font-weight: 400; line-height: 1; }
+.publication-category[open] > summary::before { content: '−'; }
+.publication-category > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 0.45rem; }
+.publication-category > summary:hover { color: var(--accent); }
+.publication-count { flex: 0 0 auto; color: var(--muted); font-size: 0.78em; font-weight: 560; }
+.publication-category > .essay-list { padding: 0 1.35rem 1.35rem; }
+.essay-card h3 { max-width: 18ch; margin: 1rem 0; font-size: clamp(2rem, 4.2vw, 3.5rem); font-weight: 620; letter-spacing: -0.045em; line-height: 1.03; }
+.essay-card h3 a { text-decoration: none; }
+.essay-card h3 a:hover, .essay-card h3 a:focus-visible { color: var(--accent); }
+@media (max-width: 40rem) { .publication-category > summary { align-items: flex-start; padding: 1rem; } .publication-category > .essay-list { padding: 0 0.8rem 0.8rem; } .publication-count { text-align: right; } }
