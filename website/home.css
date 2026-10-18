@@ -26,13 +26,20 @@
   line-height: 1.55;
 }
 
-.identity-intersection .section-copy > h2,
+.identity-intersection .section-copy > h2 {
+  max-width: 24ch;
+  font-size: clamp(2.4rem, 4.2vw, 4.5rem);
+}
+
 .brand-pillars .section-copy > h2 {
   max-width: 22ch;
 }
 
 .practice-venn {
-  margin: 2.2rem 0 0;
+  margin: 1.8rem 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .practice-venn svg {
@@ -48,10 +55,19 @@
 .practice-venn .venn-builder { fill: #423b28; stroke: #e6c46a; }
 .practice-venn .venn-label,
 .practice-venn .venn-center { fill: #f4f8fc; font-family: inherit; font-size: 18px; font-weight: 650; text-anchor: middle; stroke: none; }
-.practice-venn .venn-center { fill: #fff; font-size: 19px; font-weight: 750; }
+.practice-venn .venn-center {
+  fill: #fff;
+  font-size: 19px;
+  font-weight: 750;
+  paint-order: stroke;
+  stroke: #132736;
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
 .practice-venn figcaption {
   max-width: 42rem;
   margin-top: 0.9rem;
+  text-align: center;
   color: var(--muted);
   font-size: 0.95rem;
 }
