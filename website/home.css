@@ -27,8 +27,8 @@
 }
 
 .identity-intersection .section-copy > h2 {
-  max-width: 24ch;
-  font-size: clamp(2.4rem, 4.2vw, 4.5rem);
+  max-width: 25ch;
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
 }
 
 .brand-pillars .section-copy > h2 {
@@ -61,7 +61,7 @@
   font-weight: 750;
   paint-order: stroke;
   stroke: #132736;
-  stroke-width: 5px;
+  stroke-width: 3px;
   stroke-linejoin: round;
 }
 .practice-venn figcaption {
