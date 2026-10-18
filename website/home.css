@@ -42,51 +42,13 @@
   overflow: visible;
 }
 
-.venn-circle {
-  stroke-width: 2;
-}
-
-.venn-architect {
-  fill: rgba(97, 219, 200, 0.2);
-  stroke: rgba(97, 219, 200, 0.82);
-}
-
-.venn-research {
-  fill: rgba(107, 174, 255, 0.18);
-  stroke: rgba(129, 190, 255, 0.86);
-}
-
-.venn-builder {
-  fill: rgba(230, 196, 106, 0.18);
-  stroke: rgba(230, 196, 106, 0.9);
-}
-
-.venn-label,
-.venn-center {
-  fill: var(--text);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 720;
-  text-anchor: middle;
-}
-
-.venn-label {
-  paint-order: stroke;
-  stroke: var(--background);
-  stroke-width: 6px;
-  stroke-linejoin: round;
-}
-
-.venn-label-builder {
-  font-size: 15px;
-}
-
-.venn-center {
-  fill: #fffde6;
-  font-size: 17px;
-  letter-spacing: 0.03em;
-}
-
+.practice-venn .venn-circle { stroke-width: 2; }
+.practice-venn .venn-architect { fill: #173f48; stroke: #61dbc8; }
+.practice-venn .venn-research { fill: #18374c; stroke: #81beff; }
+.practice-venn .venn-builder { fill: #423b28; stroke: #e6c46a; }
+.practice-venn .venn-label,
+.practice-venn .venn-center { fill: #f4f8fc; font-family: inherit; font-size: 18px; font-weight: 650; text-anchor: middle; stroke: none; }
+.practice-venn .venn-center { fill: #fff; font-size: 19px; font-weight: 750; }
 .practice-venn figcaption {
   max-width: 42rem;
   margin-top: 0.9rem;
