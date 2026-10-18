@@ -9,6 +9,137 @@
   }
 }
 
+.hero h1 {
+  max-width: 14ch;
+  font-size: clamp(2.7rem, 5vw, 5.1rem);
+}
+
+.hero h1 span {
+  white-space: normal;
+}
+
+.hero-positioning {
+  max-width: 38rem;
+  margin: 1.5rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.45vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.identity-intersection .section-copy > h2,
+.brand-pillars .section-copy > h2 {
+  max-width: 22ch;
+}
+
+.practice-venn {
+  margin: 2.2rem 0 0;
+}
+
+.practice-venn svg {
+  display: block;
+  width: min(100%, 40rem);
+  height: auto;
+  overflow: visible;
+}
+
+.venn-circle {
+  stroke-width: 2;
+}
+
+.venn-architect {
+  fill: rgba(97, 219, 200, 0.2);
+  stroke: rgba(97, 219, 200, 0.82);
+}
+
+.venn-research {
+  fill: rgba(107, 174, 255, 0.18);
+  stroke: rgba(129, 190, 255, 0.86);
+}
+
+.venn-builder {
+  fill: rgba(230, 196, 106, 0.18);
+  stroke: rgba(230, 196, 106, 0.9);
+}
+
+.venn-label,
+.venn-center {
+  fill: var(--text);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 720;
+  text-anchor: middle;
+}
+
+.venn-label {
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+
+.venn-label-builder {
+  font-size: 15px;
+}
+
+.venn-center {
+  fill: #fffde6;
+  font-size: 17px;
+  letter-spacing: 0.03em;
+}
+
+.practice-venn figcaption {
+  max-width: 42rem;
+  margin-top: 0.9rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2.4rem;
+}
+
+.pillar-grid article {
+  min-height: 14rem;
+  padding: 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: var(--surface-soft);
+}
+
+.pillar-grid h3 {
+  margin: 1.5rem 0 0.8rem;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.pillar-grid article p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 70rem) {
+  .pillar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 52rem) {
+  .hero h1 {
+    max-width: 13ch;
+  }
+
+  .pillar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pillar-grid article {
+    min-height: auto;
+  }
+}
+
 /* First-session introduction: one practice formed through three disciplines. */
 .identity-orb {
   position: relative;
