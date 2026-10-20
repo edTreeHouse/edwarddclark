@@ -6,6 +6,7 @@ on:
     paths:
       - website/**
       - infrastructure/**
+      - scripts/**
       - .github/workflows/**
   workflow_dispatch:
 
@@ -130,3 +131,6 @@ jobs:
           if missing:
               raise SystemExit(f'{template} is missing required sections: {missing}')
           PY
+
+      - name: Validate structured-data dates
+        run: python3 scripts/validate-structured-data.py
