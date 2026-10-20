@@ -11,6 +11,9 @@ from pathlib import Path
 ISO_DATE = re.compile(
     r"^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?$"
 )
+ISO_DATETIME = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
 
 
 class JSONLDScripts(HTMLParser):
@@ -54,6 +57,18 @@ def validate_date(value, filename, path, field):
         raise SystemExit(f"{filename}: invalid {field} at {path}: {value!r} ({error})") from error
 
 
+def validate_profile_modified(value, filename, path):
+    if not isinstance(value, str) or not ISO_DATETIME.fullmatch(value):
+        raise SystemExit(
+            f"{filename}: ProfilePage dateModified must be a complete ISO 8601 datetime with timezone "
+            f"at {path}: {value!r}"
+        )
+    try:
+        datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise SystemExit(f"{filename}: invalid ProfilePage dateModified at {path}: {value!r} ({error})") from error
+
+
 def main():
     profile_pages = 0
     for filename in sorted(Path("website").rglob("*.html")):
@@ -75,6 +90,7 @@ def main():
                     profile_pages += 1
                     if "dateModified" not in node:
                         raise SystemExit(f"{filename}: ProfilePage is missing dateModified")
+                    validate_profile_modified(node["dateModified"], filename, path)
 
     if profile_pages == 0:
         raise SystemExit("No ProfilePage JSON-LD found")
