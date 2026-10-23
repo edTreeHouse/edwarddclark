@@ -126,3 +126,96 @@
     gap: 0.8rem;
   }
 }
+
+/* Readable records for a mixed scholarly and research-infrastructure collection. */
+.outputs-hero h1 {
+  max-width: 18ch;
+  font-size: clamp(2.8rem, 5.6vw, 5.5rem);
+}
+
+.section-copy > .output-meta {
+  margin-bottom: 1.5rem;
+}
+
+.output-featured h2 {
+  max-width: 26ch;
+  font-size: clamp(1.9rem, 3.5vw, 3.2rem);
+  line-height: 1.12;
+}
+
+.output-featured > p,
+.output-records p,
+.output-progress {
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+}
+
+.output-meta {
+  min-width: 0;
+}
+
+.output-meta .status-badge {
+  white-space: normal;
+}
+
+.output-citation {
+  margin: 1.8rem 0 0;
+  padding: 1.2rem 1.4rem;
+  border-left: 2px solid var(--accent);
+  background: var(--surface-soft);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.output-citation p {
+  margin: 0;
+}
+
+.output-citation a {
+  color: var(--accent);
+}
+
+.output-records article {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.output-records article:first-child {
+  padding-top: 0.5rem;
+}
+
+.output-records h3 {
+  margin: 1rem 0 0.75rem;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  line-height: 1.25;
+}
+
+.output-records p {
+  max-width: 48rem;
+}
+
+.output-progress {
+  margin: 0;
+}
+
+.output-progress > div {
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.output-progress dt {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.output-progress dt span {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.output-progress dd {
+  margin: 0.8rem 0 0;
+}
