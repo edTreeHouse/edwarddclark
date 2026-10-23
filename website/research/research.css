@@ -67,3 +67,62 @@
   .research-hero { min-height: 36rem; }
   .research-hero-image { object-position: 78% center; }
 }
+
+/* Keep the expanded research narrative readable within the editorial grid. */
+.research-list {
+  grid-template-columns: 1fr;
+}
+
+.research-list article {
+  min-height: auto;
+}
+
+.research-list h3 {
+  margin-top: 0.75rem;
+}
+
+.research-list article > p:not(.card-number) {
+  color: var(--muted);
+}
+
+.research-list article .research-stage-status {
+  margin-top: 1rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.section-copy > .research-note {
+  margin-top: 1.8rem;
+  padding: 1.2rem 1.4rem;
+  border-left: 2px solid var(--accent);
+  background: var(--surface-soft);
+  font-size: 1rem;
+}
+
+.research-questions {
+  max-width: 48rem;
+  padding-left: 1.5rem;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+}
+
+.research-questions li {
+  padding-left: 0.35rem;
+  margin-bottom: 1.15rem;
+}
+
+.research-questions strong,
+.research-note strong {
+  color: var(--text);
+}
+
+.section-copy > .research-contact {
+  margin-top: 1.8rem;
+}
+
+.research-contact .text-link {
+  display: inline;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
