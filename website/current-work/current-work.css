@@ -405,6 +405,22 @@
   animation-delay: -3.8s;
 }
 
+.node-ata {
+  top: 52%;
+  left: 0;
+  animation-delay: -4.7s;
+}
+
+.constellation-ata-mark {
+  padding: 0.35rem;
+}
+
+.constellation-ata-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .node-architecture {
   top: 52%;
   right: 0;
@@ -532,6 +548,7 @@
   .node-csi { top: 2%; }
   .node-uel { top: 19%; left: 0; }
   .node-vibe { top: 19%; right: 0; }
+  .node-ata { top: 55%; left: 0; }
   .node-architecture { top: 55%; right: 0; }
 
   .constellation-node-label {
