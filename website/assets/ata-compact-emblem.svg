@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">Agent Transaction Assurance</title>
+<desc id="desc">Cyan outlined shield with ATA initials and a verified check mark.</desc>
+<defs><linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9bfaff"/><stop offset=".52" stop-color="#22c9ef"/><stop offset="1" stop-color="#3688ff"/></linearGradient><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#113f61"/><stop offset="1" stop-color="#071521"/></linearGradient></defs>
+<path d="M128 16 C158 41 189 47 219 48 L219 122 C219 176 187 213 128 240 C69 213 37 176 37 122 L37 48 C67 47 98 41 128 16Z" fill="url(#fill)" stroke="url(#edge)" stroke-width="9" stroke-linejoin="round"/>
+<path d="M128 31 C155 52 182 58 203 60 L203 122 C203 165 180 197 128 222 C76 197 53 165 53 122 L53 60 C74 58 101 52 128 31Z" fill="none" stroke="#66e7f2" stroke-opacity=".4" stroke-width="2.5"/>
+<text x="128" y="127" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="800" letter-spacing="-2" text-anchor="middle" fill="#f5ffff">ATA</text>
+<circle cx="128" cy="169" r="24" fill="#073347" stroke="#52e9e5" stroke-width="4"/>
+<path d="M115 168 L125 178 L144 158" fill="none" stroke="#8affec" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
